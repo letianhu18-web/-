@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>手势控制颗粒圣诞树</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="hud">
+      <h1>🎄 手势控制颗粒圣诞树</h1>
+      <p>请允许摄像头权限，张开或收拢整只手掌（手指展开程度）来放大或缩小圣诞树。</p>
+      <p id="status">状态：正在初始化...</p>
+      <p id="scale">当前缩放：1.00x</p>
+    </div>
+
+    <video id="video" autoplay playsinline muted></video>
+    <canvas id="hand-canvas"></canvas>
+    <canvas id="tree-canvas"></canvas>
+
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

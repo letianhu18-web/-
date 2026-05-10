@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>母亲节快乐 | 花园祝福</title>
+    <meta name="theme-color" content="#fff8fb" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <canvas id="petal-canvas" aria-hidden="true"></canvas>
+
+    <main class="garden" aria-label="母亲节互动花园">
+      <section class="message-panel" aria-labelledby="title">
+        <p class="date">Mother's Day</p>
+        <h1 id="title">母亲节快乐</h1>
+        <p class="wish">
+          愿所有温柔、耐心、牵挂和爱，都在今天开成满园的花。
+        </p>
+        <div class="actions" aria-label="互动按钮">
+          <button class="primary-action" id="bloomButton" type="button">
+            <span aria-hidden="true">✿</span>
+            多开一些花
+          </button>
+          <button class="icon-action" id="bouquetButton" type="button" aria-label="送出一束花" title="送出一束花">
+            💐
+          </button>
+          <button class="icon-action" id="windButton" type="button" aria-label="吹起花瓣" title="吹起花瓣">
+            ༄
+          </button>
+        </div>
+      </section>
+
+      <section class="bouquet" id="bouquet" aria-label="送给妈妈的花束">
+        <div class="ribbon">For Mom</div>
+        <div class="bouquet-head" aria-hidden="true">
+          <span class="bouquet-flower coral"></span>
+          <span class="bouquet-flower gold"></span>
+          <span class="bouquet-flower pink"></span>
+          <span class="bouquet-flower blue"></span>
+          <span class="bouquet-flower rose"></span>
+        </div>
+        <p>把这束花送给妈妈</p>
+      </section>
+
+      <div class="hint" aria-live="polite">点按空白处开花，按住滑动会撒花瓣。</div>
+      <div class="flower-field" id="flowerField" aria-hidden="true"></div>
+    </main>
+
+    <template id="flowerTemplate">
+      <button class="flower" type="button" aria-label="一朵会跳舞的花">
+        <span class="stem"></span>
+        <span class="leaf left"></span>
+        <span class="leaf right"></span>
+        <span class="bloom">
+          <span class="petal p1"></span>
+          <span class="petal p2"></span>
+          <span class="petal p3"></span>
+          <span class="petal p4"></span>
+          <span class="petal p5"></span>
+          <span class="petal p6"></span>
+          <span class="center"></span>
+        </span>
+      </button>
+    </template>
+
+    <script src="./script.js"></script>
+  </body>
+</html>

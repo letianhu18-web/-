@@ -103,10 +103,10 @@ window.addEventListener('keydown',e=>{
   if(e.code==='KeyR'&&!e.repeat&&['playing','over','paused','won'].includes(mode))start();
 });
 window.addEventListener('keyup',e=>{if(keys.has(e.code)){keys.delete(e.code);updateButtons();}});
-window.addEventListener('blur',()=>{clearInput();if(mode==='playing')pause();});
-document.addEventListener('visibilitychange',()=>{if(document.hidden){clearInput();if(mode==='playing')pause();}last=performance.now();accumulator=0;});
+window.addEventListener('blur',clearInput);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)clearInput();last=performance.now();accumulator=0;});
 window.addEventListener('resize',()=>world?.resize());
-$('world').addEventListener('webglcontextlost',e=>{e.preventDefault();if(mode==='playing')pause();$('error-text').textContent='3D 画面暂时中断了，请重新加载游戏。';$('error-panel').hidden=false;});
+$('world').addEventListener('webglcontextlost',e=>{e.preventDefault();clearInput();setMode('error');$('error-text').textContent='3D 画面暂时中断了，请重新加载游戏。';$('error-panel').hidden=false;});
 
 function frame(now){
   const dt=Math.min(Math.max((now-last)/1000,0),.075);last=now;clock+=dt;

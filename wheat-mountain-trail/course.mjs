@@ -27,12 +27,13 @@ export function makeCourse() {
   let z = 38, i = 0;
   while (z < TOTAL_DISTANCE - 65) {
     const fullWidth = i % 3 === 0;
-    const lane = [0, -1.85, 1.85, 0, 1.85, -1.85][i % 6];
-    items.push({ id: `obstacle-${i}`, type: fullWidth ? 'log' : 'rock', z, x: fullWidth ? 0 : lane, width: fullWidth ? 7.6 : 1.15, depth: fullWidth ? .5 : .85, height: fullWidth ? .5 : .62 });
+    const obstacleZ = fullWidth ? z : z + (Math.random() * 6 - 3);
+    const obstacleX = fullWidth ? 0 : (Math.random() * 3.8 - 1.9);
+    items.push({ id: `obstacle-${i}`, type: fullWidth ? 'log' : 'rock', z: obstacleZ, x: obstacleX, width: fullWidth ? 7.6 : 1.15, depth: fullWidth ? .5 : .85, height: fullWidth ? .5 : .62 });
 
     // Keep pickups clear of both this obstacle and the next one.
-    addBun(z + 8 + Math.random() * 7);
-    if (Math.random() < .5) addBun(z + 17 + Math.random() * 5);
+    addBun(obstacleZ + 8 + Math.random() * 7);
+    if (Math.random() < .5) addBun(obstacleZ + 17 + Math.random() * 5);
 
     z += 31 + (i * 7 % 14);
     i++;

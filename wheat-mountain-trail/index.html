@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#173c32">
+  <meta name="description" content="习近平挑麦挑战十里山路：左右保持平衡，上键加左右键横向移动，空格跳过障碍，拾取庆丰包子加速，走完5000米即可获胜。">
+  <title>十里山路 · 扛麦挑战</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main id="game" data-mode="loading">
+    <canvas id="world" aria-label="3D 山路与挑麦的习近平卡通角色"></canvas>
+    <div class="vignette" aria-hidden="true"></div>
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="十里山路，重新开始"><span class="brand-mark">麦</span><span>十里山路<small>扛麦挑战</small></span></a>
+      <div class="top-actions">
+        <button id="sound" class="icon-btn" aria-label="开启声音" aria-pressed="false" title="声音"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M11 4 5 9H2v6h3l6 5V4Z"/><path class="sound-on" d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/><path class="sound-off" d="m16 9 6 6m0-6-6 6"/></svg></button>
+        <button id="pause" class="icon-btn" aria-label="暂停游戏" title="暂停（P / Esc）" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg></button>
+      </div>
+    </header>
+    <section class="hud" id="hud" aria-label="游戏得分" hidden>
+      <div class="distance"><span class="eyebrow">已走山路</span><div><strong id="distance">0</strong><span class="unit">米</span></div></div>
+      <div class="score"><span class="eyebrow">得分</span><strong id="score">0</strong></div>
+      <div class="wind"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 8h12a3 3 0 1 0-3-3M2 12h17a3 3 0 1 1-3 3M4 16h6"/></svg><span id="wind">微风</span></div>
+      <div class="run-badges"><span id="speed">5.0 米/秒</span><span>包子 <b id="buns">0</b></span><span id="boost" hidden>加速 +20%</span></div>
+    </section>
+    <section class="route-progress" id="route-progress" aria-label="十里山路挑战进度" hidden><div><span>十里终点</span><strong id="li-progress">0.00 / 10 里</strong></div><progress id="route-meter" max="5000" value="0" aria-label="已走米数"></progress><small id="route-remaining">还剩 5,000 米</small></section>
+    <section class="intro" id="intro" aria-labelledby="intro-title">
+      <div class="intro-kicker"><span></span>3D 十里闯关</div>
+      <h1 id="intro-title">十里山路<span>扛麦挑战</span></h1>
+      <p class="intro-story">习近平，扁担，两箩筐麦子。<br>跳过路障，吃包子加速，走完十里就赢。</p>
+      <div class="intro-controls controls-guide"><div><span><kbd>←</kbd> <kbd>→</kbd></span><span>调整身体平衡</span></div><div><span><kbd>↑</kbd> + <kbd>←</kbd> / <kbd>→</kbd></span><span>向左 / 向右移动</span></div><div><span><kbd class="space-key">空格</kbd></span><span>跳过横木和山石</span></div></div>
+      <button id="start" class="primary-btn" disabled><span id="start-label">正在走进山里…</span><span aria-hidden="true">↗</span></button>
+      <p class="start-hint">全程 5,000 米 · 包子加速 9 秒，最多叠加 3 层</p>
+    </section>
+    <div class="scene-caption" id="scene-caption"><span>麦子要扛稳</span><small>山路还很长</small></div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <div class="hazard-hint" id="hazard-hint" hidden></div>
+    <div id="balance-ui" class="balance-panel" hidden>
+      <div class="balance-label"><span id="balance-status">稳住，慢慢走</span><span id="balance-deg">0°</span></div>
+      <div class="balance-track" role="meter" aria-label="身体倾斜角度" aria-valuemin="-55" aria-valuemax="55" aria-valuenow="0" id="balance-meter"><div class="safe-zone"></div><i class="center-mark"></i><span id="balance-needle"></span></div>
+      <div class="balance-ends"><span>向左倾</span><span>保持平衡</span><span>向右倾</span></div>
+    </div>
+    <div class="game-controls" id="game-controls" hidden>
+      <div class="control-cluster"><button class="move-btn" id="move-left" aria-label="向左横向移动"><span>↖</span> 左移</button><button class="steer" id="left" aria-label="左倾"><span>←</span><small>左倾</small></button></div>
+      <div class="jump-cluster"><p class="keyboard-hint"><kbd>↑</kbd> + <kbd>←</kbd> / <kbd>→</kbd> 移动 <span>·</span> <kbd>P</kbd> 暂停</p><button class="jump-btn" id="jump" aria-label="跳跃（空格）"><span>跳跃</span><small id="jump-label">空格</small></button></div>
+      <div class="control-cluster"><button class="move-btn" id="move-right" aria-label="向右横向移动">右移 <span>↗</span></button><button class="steer" id="right" aria-label="右倾"><span>→</span><small>右倾</small></button></div>
+    </div>
+    <section class="overlay" id="pause-overlay" aria-label="游戏已暂停" hidden>
+      <div class="result-card"><span class="eyebrow">山路就在这里</span><h2>歇一会儿</h2><p>准备好了，就接着走。</p><button class="primary-btn" id="resume">继续挑麦 <span aria-hidden="true">→</span></button><button class="text-btn" id="restart-paused">从头再来</button></div>
+    </section>
+    <section class="overlay" id="result-overlay" role="dialog" aria-modal="true" aria-labelledby="result-title" hidden>
+      <div class="result-card game-result">
+        <div class="result-body" id="result-body" tabindex="0" role="region" aria-label="本局成绩与成就，可滚动查看">
+          <div class="result-heading"><span class="eyebrow" id="result-kicker">这担麦子，有点晃</span><h2 id="result-title" tabindex="-1">挑战结束</h2><p id="result-message">下次早点向反方向扶正。</p></div>
+          <div class="result-stats"><div><span>本次走了</span><strong id="final-distance">0<small>米</small></strong></div><div><span>获得分数</span><strong id="final-score">0</strong></div></div>
+          <p class="run-summary" id="run-summary"></p><p class="run-summary" id="score-breakdown"></p><p class="scoring-rule">每米 10 分 · 每个包子 100 分 · 非纯路程成就每项 1,000 分</p>
+          <dl class="achievement-stats">
+            <div><dt>包子拾取率</dt><dd id="final-pickup-rate">—</dd><dd class="metric-note" id="final-bun-count">拾取 0 / 经过 0 个</dd></div>
+            <div><dt>加速路程占比</dt><dd id="final-boost-ratio">0.0%</dd><dd class="metric-note" id="final-boost-distance">加速走过 0 米</dd></div>
+            <div><dt>最大倾斜角度</dt><dd id="final-max-angle">0.0°</dd><dd class="metric-note">本局左右倾斜的最大值</dd></div>
+            <div><dt>最长连续拾取</dt><dd id="final-bun-streak">0 个</dd><dd class="metric-note">漏掉包子后重新计数</dd></div>
+          </dl>
+          <section class="earned-achievements" aria-labelledby="achievement-title"><h3 id="achievement-title">本局成就 <span id="achievement-count">0 项</span></h3><ul id="achievement-list" class="achievement-list"></ul></section>
+          <p class="best-line" id="best-line"></p>
+          <form id="score-submission" class="score-submission">
+            <label for="player-name">自愿留名上榜</label>
+            <p id="name-hint">昵称和成绩会公开显示。不提交也能继续玩。</p>
+            <div class="submission-fields"><input id="player-name" name="nickname" type="text" maxlength="48" autocomplete="off" placeholder="输入昵称，最多 24 个字符" aria-describedby="name-hint"><button id="submit-score" type="submit">提交成绩</button></div>
+            <p id="submission-status" role="status" aria-live="polite"></p>
+          </form>
+          <details id="leaderboard-panel" class="leaderboard-panel">
+            <summary>排行榜 <span>按总分排名</span></summary>
+            <div class="ranking-toolbar"><p id="ranking-status" role="status">展开查看排行榜</p><button type="button" id="refresh-ranking">刷新</button></div>
+            <div class="ranking-scroll" tabindex="0" role="region" aria-label="总分排行榜，可横向滚动"><table class="ranking-table"><thead><tr><th scope="col">名次</th><th scope="col">昵称</th><th scope="col">总分</th><th scope="col">路程</th><th scope="col">用时</th></tr></thead><tbody id="ranking-rows"></tbody></table></div>
+          </details>
+        </div>
+        <div class="result-footer"><button class="primary-btn" id="restart">再任一届 <span aria-hidden="true">↗</span></button><p class="result-hint">按 Enter 或空格重新开始</p></div>
+      </div>
+    </section>
+    <div class="error-panel" id="error-panel" role="alert" hidden><h2>画面暂时没能打开</h2><p id="error-text">请用支持 WebGL 2 的浏览器打开，再试一次。</p><button class="primary-btn" onclick="location.reload()">重新加载</button></div>
+    <span class="fiction-note" id="fiction-note">卡通虚构场景 · <a href="./credits.html" target="_blank" rel="noopener">照片署名</a></span>
+  </main>
+  <script type="module" src="./game.mjs"></script>
+</body>
+</html>

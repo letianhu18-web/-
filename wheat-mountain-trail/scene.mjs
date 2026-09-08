@@ -1,4 +1,4 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js';
+import * as THREE from './assets/three.module.js';
 import { roadX, roadY, roadHeading, clamp, ROAD_HALF_WIDTH, TOTAL_DISTANCE } from './physics.mjs';
 
 const V = (x=0,y=0,z=0) => new THREE.Vector3(x,y,z);

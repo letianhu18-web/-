@@ -1,22 +1,33 @@
-# -from docx import Document
+# Web Projects｜网页项目合集
 
-# 创建一个新的 Word 文档
-doc = Document()
+这个仓库收录了三个独立的互动网页项目。
 
-# 添加标题
-doc.add_heading('我的第一个 Word 文档', level=1)
+## 项目目录
 
-# 添加段落
-doc.add_paragraph('这是第一段内容。')
-doc.add_paragraph('这份文档是用 Python 自动生成的。')
+| 项目 | 说明 | 代码 |
+|---|---|---|
+| 手势控制颗粒圣诞树 | 使用摄像头识别拇指与食指距离，实时控制 3D 粒子圣诞树缩放 | [根目录](./) |
+| 母亲节互动花园 | 包含花瓣动画、祝福文字和互动花园效果 | [mothers-day-flower-garden](./mothers-day-flower-garden/) |
+| 十里山路·扛麦挑战 | 山路跑酷小游戏；包子和石头每局随机生成，游戏不会自动暂停 | [wheat-mountain-trail](./wheat-mountain-trail/) |
 
-# 添加小标题
-doc.add_heading('第二部分', level=2)
+## 在线游戏
 
-# 添加更多内容
-doc.add_paragraph('你可以继续往里面写作业、报告、总结。')
+[打开《十里山路·扛麦挑战》](https://wheat-mountain-trail-random.huheinz.chatgpt.site)
 
-# 保存文件
-doc.save('example.docx')
+## 技术
 
-print("Word 文档已生成：example.docx")
+- HTML、CSS、JavaScript
+- Three.js
+- MediaPipe Hands（圣诞树手势识别）
+- 响应式手机与电脑布局
+
+## 目录结构
+
+```text
+.
+├─ index.html
+├─ script.js
+├─ styles.css
+├─ mothers-day-flower-garden/
+└─ wheat-mountain-trail/
+```

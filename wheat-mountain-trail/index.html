@@ -7,6 +7,8 @@
   <meta name="description" content="习近平挑麦挑战十里山路：左右保持平衡，上键加左右键横向移动，空格跳过障碍，拾取庆丰包子加速，走完5000米即可获胜。">
   <title>十里山路 · 扛麦挑战</title>
   <link rel="icon" href="data:,">
+  <link rel="modulepreload" href="./game.bundle.mjs">
+  <link rel="preload" href="./assets/xi-reference.jpg" as="image" fetchpriority="high">
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
@@ -83,6 +85,6 @@
     <div class="error-panel" id="error-panel" role="alert" hidden><h2>画面暂时没能打开</h2><p id="error-text">请用支持 WebGL 2 的浏览器打开，再试一次。</p><button class="primary-btn" onclick="location.reload()">重新加载</button></div>
     <span class="fiction-note" id="fiction-note">卡通虚构场景 · <a href="./credits.html" target="_blank" rel="noopener">照片署名</a></span>
   </main>
-  <script type="module" src="./game.mjs"></script>
+  <script type="module" src="./game.bundle.mjs"></script>
 </body>
 </html>

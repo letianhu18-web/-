@@ -1,12 +1,15 @@
 var requestAnimFrame = (function(){
-  return window.requestAnimationFrame       ||
+  var request = window.requestAnimationFrame       ||
     window.webkitRequestAnimationFrame ||
     window.mozRequestAnimationFrame    ||
     window.oRequestAnimationFrame      ||
-    window.msRequestAnimationFrame     ||
-    function(callback){
-      window.setTimeout(callback, 1000 / 60);
-    };
+    window.msRequestAnimationFrame;
+  if (request) {
+    return function(callback) { return request.call(window, callback); };
+  }
+  return function(callback) {
+    return window.setTimeout(callback, 1000 / 60);
+  };
 })();
 
 //create the canvas

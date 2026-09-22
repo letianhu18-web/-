@@ -188,6 +188,11 @@ p {
     color: rgba(255, 247, 223, 0.78);
     font-size: 11px;
   }
+
+  .touch-hint.input-live {
+    color: #ffe08a;
+    font-weight: 700;
+  }
 }
 
 @media (orientation: landscape) and (max-height: 560px) and (pointer: coarse),

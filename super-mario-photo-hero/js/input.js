@@ -2,10 +2,20 @@
     var pressedKeys = {};
     var keyboardKeys = {};
     var virtualPointers = {};
+    var clearTouchStates = [];
 
     function updateKey(key) {
         var pointers = virtualPointers[key];
-        pressedKeys[key] = !!keyboardKeys[key] || !!(pointers && pointers.size);
+        var hasPointer = false;
+        if (pointers) {
+            for (var id in pointers) {
+                if (pointers.hasOwnProperty(id)) {
+                    hasPointer = true;
+                    break;
+                }
+            }
+        }
+        pressedKeys[key] = !!keyboardKeys[key] || hasPointer;
     }
 
     function setKey(event, status) {
@@ -49,35 +59,84 @@
         pressedKeys = {};
         keyboardKeys = {};
         virtualPointers = {};
-        document.querySelectorAll('.touch-button.is-pressed').forEach(function(button) {
-            button.classList.remove('is-pressed');
-        });
+        clearTouchStates.forEach(function(clearState) { clearState(); });
     });
 
     function bindTouchControls() {
-        document.querySelectorAll('[data-game-key]').forEach(function(button) {
-            var key = button.getAttribute('data-game-key').toUpperCase();
-            var activePointers = new Set();
+        var buttons = document.querySelectorAll('[data-game-key]');
+        for (var index = 0; index < buttons.length; index++) {
+            bindOneButton(buttons[index]);
+        }
+    }
 
-            function releasePointer(event) {
-                if (!activePointers.has(event.pointerId)) return;
-                activePointers.delete(event.pointerId);
-                window.input.setVirtualKey(key, false, event.pointerId);
-                if (!activePointers.size) button.classList.remove('is-pressed');
-            }
+    function bindOneButton(button) {
+        var key = button.getAttribute('data-game-key').toUpperCase();
+        var activePointers = {};
 
+        function pressPointer(pointerId) {
+            var id = String(pointerId);
+            if (activePointers[id]) return;
+            activePointers[id] = true;
+            window.input.setVirtualKey(key, true, id);
+            button.classList.add('is-pressed');
+        }
+
+        function releasePointer(pointerId) {
+            var id = String(pointerId);
+            if (!activePointers[id]) return;
+            delete activePointers[id];
+            window.input.setVirtualKey(key, false, id);
+            if (!Object.keys(activePointers).length) button.classList.remove('is-pressed');
+        }
+
+        clearTouchStates.push(function() {
+            activePointers = {};
+            button.classList.remove('is-pressed');
+        });
+
+        var supportsPointerEvents = !!window.PointerEvent;
+        var supportsTouchEvents = ('ontouchstart' in window) ||
+            (window.navigator && window.navigator.maxTouchPoints > 0);
+
+        if (supportsPointerEvents) {
             button.addEventListener('pointerdown', function(event) {
                 event.preventDefault();
-                activePointers.add(event.pointerId);
-                window.input.setVirtualKey(key, true, event.pointerId);
-                button.classList.add('is-pressed');
-                if (button.setPointerCapture) button.setPointerCapture(event.pointerId);
+                pressPointer('pointer-' + event.pointerId);
+                if (button.setPointerCapture) {
+                    try { button.setPointerCapture(event.pointerId); } catch (ignore) {}
+                }
             });
+            button.addEventListener('pointerup', function(event) { releasePointer('pointer-' + event.pointerId); });
+            button.addEventListener('pointercancel', function(event) { releasePointer('pointer-' + event.pointerId); });
+            button.addEventListener('lostpointercapture', function(event) { releasePointer('pointer-' + event.pointerId); });
+        }
 
-            button.addEventListener('pointerup', releasePointer);
-            button.addEventListener('pointercancel', releasePointer);
-            button.addEventListener('lostpointercapture', releasePointer);
-        });
+        if (supportsTouchEvents) {
+            button.addEventListener('touchstart', function(event) {
+                event.preventDefault();
+                for (var touchIndex = 0; touchIndex < event.changedTouches.length; touchIndex++) {
+                    pressPointer('touch-' + event.changedTouches[touchIndex].identifier);
+                }
+            }, { passive: false });
+            button.addEventListener('touchend', function(event) {
+                for (var touchIndex = 0; touchIndex < event.changedTouches.length; touchIndex++) {
+                    releasePointer('touch-' + event.changedTouches[touchIndex].identifier);
+                }
+            }, false);
+            button.addEventListener('touchcancel', function(event) {
+                for (var touchIndex = 0; touchIndex < event.changedTouches.length; touchIndex++) {
+                    releasePointer('touch-' + event.changedTouches[touchIndex].identifier);
+                }
+            }, false);
+        }
+
+        if (!supportsPointerEvents && !supportsTouchEvents) {
+            button.addEventListener('mousedown', function(event) {
+                event.preventDefault();
+                pressPointer('mouse');
+            });
+            window.addEventListener('mouseup', function() { releasePointer('mouse'); });
+        }
     }
 
     if (document.readyState === 'loading') {
@@ -92,12 +151,20 @@
         },
         setVirtualKey: function(key, status, pointerId) {
             key = key.toUpperCase();
-            if (!virtualPointers[key]) virtualPointers[key] = new Set();
+            if (!virtualPointers[key]) virtualPointers[key] = {};
+            pointerId = String(pointerId);
             if (status) {
-                virtualPointers[key].add(pointerId);
+                virtualPointers[key][pointerId] = true;
             } else {
-                virtualPointers[key].delete(pointerId);
-                if (!virtualPointers[key].size) delete virtualPointers[key];
+                delete virtualPointers[key][pointerId];
+                var hasPointers = false;
+                for (var id in virtualPointers[key]) {
+                    if (virtualPointers[key].hasOwnProperty(id)) {
+                        hasPointers = true;
+                        break;
+                    }
+                }
+                if (!hasPointers) delete virtualPointers[key];
             }
             updateKey(key);
         },

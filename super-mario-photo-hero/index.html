@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
@@ -7,12 +7,16 @@
          Ideally, we draw in this size and scale appropriately.-->
     <title>超级马里奥 · 真人主角版</title>
     <meta name="description" content="经典平台游戏，主角换成照片中的真人头像。">
-    <meta name="viewport" content="width=device-width">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%226%22 fill=%22%23152540%22/%3E%3Cpath d=%22M6 17a10 10 0 0 1 20 0H6Z%22 fill=%22%23e24738%22/%3E%3Cpath d=%22M9 17h14v6a3 3 0 0 1-3 3h-8a3 3 0 0 1-3-3z%22 fill=%22%23f3deaf%22/%3E%3Ccircle cx=%2213%22 cy=%2212%22 r=%222%22 fill=%22%23fff7df%22/%3E%3Ccircle cx=%2219%22 cy=%2212%22 r=%222%22 fill=%22%23fff7df%22/%3E%3C/svg%3E">
 
     <link rel="stylesheet" href="css/game.css">
   </head>
   <body>
+    <div class="startup-status" id="startup-status" role="status" aria-live="polite">
+      <span id="startup-message">正在加载游戏素材…</span>
+      <button id="startup-retry" type="button" hidden>重试</button>
+    </div>
     <script type="text/javascript" src="js/util.js"></script>
     <script type="text/javascript" src="js/input.js"></script>
     <script type="text/javascript" src="js/resources.js"></script>

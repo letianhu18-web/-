@@ -16,9 +16,43 @@ body {
   font-family: Arial, sans-serif;
 }
 
+.startup-status {
+  position: fixed;
+  z-index: 5;
+  top: 50%;
+  left: 50%;
+  width: min(360px, calc(100vw - 32px));
+  box-sizing: border-box;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 12px;
+  background: rgba(17, 24, 39, 0.94);
+  color: #fff7df;
+  text-align: center;
+  line-height: 1.45;
+  transform: translate(-50%, -50%);
+}
+
+.startup-status[hidden] {
+  display: none;
+}
+
+.startup-status button {
+  display: block;
+  margin: 12px auto 0;
+  padding: 9px 18px;
+  border: 0;
+  border-radius: 8px;
+  background: #ffe08a;
+  color: #182337;
+  font-size: 16px;
+  font-weight: 700;
+}
+
 canvas {
   display: block;
-  width: min(762px, 100vw);
+  width: 762px;
+  max-width: 100vw;
   height: auto;
   margin: 0 auto;
   background-color: #63c9f2;
@@ -51,7 +85,7 @@ p {
   display: none;
 }
 
-@media (max-width: 760px), (pointer: coarse) {
+@media (max-width: 1024px), (pointer: coarse) {
   html, body {
     height: auto;
     min-height: 100%;
@@ -73,8 +107,8 @@ p {
   canvas {
     order: 1;
     flex: 0 1 auto;
-    width: min(762px, 100vw, calc((100dvh - 210px) * 1.058333));
-    max-width: 100vw;
+    width: 100vw;
+    max-width: 762px;
     margin: 0 auto;
   }
 
@@ -156,7 +190,8 @@ p {
   }
 }
 
-@media (orientation: landscape) and (max-height: 560px) and (pointer: coarse) {
+@media (orientation: landscape) and (max-height: 560px) and (pointer: coarse),
+       (orientation: landscape) and (max-height: 560px) and (max-width: 1024px) {
   html, body {
     width: 100%;
     height: 100dvh;
@@ -174,7 +209,9 @@ p {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: min(762px, 100vw, calc((100dvh - 12px) * 1.058333));
+    width: auto;
+    height: calc(100vh - 12px);
+    max-width: 100vw;
     margin: 0;
     transform: translate(-50%, -50%);
   }

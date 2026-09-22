@@ -43,7 +43,58 @@ resources.load([
   'sprites/enemyr.png',
 ]);
 
-resources.onReady(init);
+var gameStarted = false;
+var startupStatus = document.getElementById('startup-status');
+var startupMessage = document.getElementById('startup-message');
+var startupRetry = document.getElementById('startup-retry');
+var startupTimer;
+
+function showStartupStatus(message, canRetry) {
+  if (!startupStatus || !startupMessage) return;
+  startupMessage.textContent = message;
+  startupStatus.hidden = false;
+  if (startupRetry) startupRetry.hidden = !canRetry;
+}
+
+function hideStartupStatus() {
+  if (startupStatus) startupStatus.hidden = true;
+}
+
+function startWhenResourcesSettle(errors) {
+  var failedCoreAssets = errors.filter(function(url) {
+    return url !== 'sprites/face-head.png';
+  });
+  window.clearTimeout(startupTimer);
+
+  if (failedCoreAssets.length) {
+    showStartupStatus('游戏素材没能加载完整。请检查网络后点“重试”。', true);
+    return;
+  }
+
+  if (!gameStarted) {
+    gameStarted = true;
+    init();
+  }
+
+  if (errors.length) {
+    showStartupStatus('游戏已启动，但真人头像素材没加载出来。', false);
+    window.setTimeout(hideStartupStatus, 5000);
+  } else {
+    hideStartupStatus();
+  }
+}
+
+if (startupRetry) {
+  startupRetry.addEventListener('click', function() { window.location.reload(); });
+}
+
+startupTimer = window.setTimeout(function() {
+  if (!gameStarted) {
+    showStartupStatus('游戏素材仍在加载。网络较慢时请稍候，或点“重试”。', true);
+  }
+}, 15000);
+
+resources.onReady(startWhenResourcesSettle);
 var level;
 var sounds;
 var music;

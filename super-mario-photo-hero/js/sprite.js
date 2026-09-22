@@ -61,7 +61,9 @@
     if (this.faceOverlay) {
       var face = this.faceOverlay;
       var faceImage = resources.get(face.img);
-      ctx.drawImage(faceImage, 0, 0, faceImage.width, faceImage.height, face.x, face.y, face.width, face.height);
+      if (faceImage && faceImage.width > 0 && faceImage.height > 0) {
+        ctx.drawImage(faceImage, 0, 0, faceImage.width, faceImage.height, face.x, face.y, face.width, face.height);
+      }
     }
     ctx.restore();
   }

@@ -102,8 +102,12 @@ function update(dt) {
 function handleInput(dt) {
   if (player.piping || player.dying || player.noInput) return; //don't accept input
 
-  // Keep the original walk speed; directional keys only control movement.
-  player.noRun();
+  if (input.isDown('RUN')) {
+    player.run();
+  } else {
+    // Arrow movement keeps the original normal walking speed.
+    player.noRun();
+  }
   if (input.isDown('JUMP') || input.isDown('UP')) {
     player.jump();
   } else {

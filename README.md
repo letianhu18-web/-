@@ -9,7 +9,7 @@
 | 手势控制颗粒圣诞树 | 使用摄像头识别拇指与食指距离，实时控制 3D 粒子圣诞树缩放 | [根目录](./) |
 | 母亲节互动花园 | 包含花瓣动画、祝福文字和互动花园效果 | [mothers-day-flower-garden](./mothers-day-flower-garden/) |
 | 十里山路·扛麦挑战 | 山路跑酷小游戏；包子和石头每局随机生成，游戏不会自动暂停 | [wheat-mountain-trail](./wheat-mountain-trail/) |
-| 超级马里奥·真人主角版 | 真人脸部主角的平台游戏，使用方向键操作 | [super-mario-photo-hero](./super-mario-photo-hero/) |
+| 超级马里奥·真人主角版 | 真人脸部主角的平台游戏，支持方向键和手机触屏操作 | [super-mario-photo-hero](./super-mario-photo-hero/) |
 
 ## 在线游戏
 

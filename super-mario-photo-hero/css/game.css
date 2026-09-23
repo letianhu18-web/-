@@ -135,14 +135,16 @@ p {
     width: min(calc(100vw - 24px), 380px);
     min-height: 0;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: auto auto;
     grid-template-areas: "pad actions" "hint hint";
     align-items: center;
     column-gap: clamp(8px, 3vw, 18px);
+    justify-content: space-between;
     row-gap: 5px;
     padding: 4px 0 6px;
     box-sizing: border-box;
     flex: none;
+    margin-top: auto;
     touch-action: none;
     user-select: none;
     -webkit-user-select: none;
@@ -223,7 +225,7 @@ p {
   }
 
   .touch-pad {
-    grid-template-columns: repeat(3, 44px);
+    grid-template-columns: repeat(3, 42px);
     grid-template-rows: repeat(3, 42px);
   }
 
@@ -292,6 +294,7 @@ p {
     width: 100%;
     height: 100%;
     min-height: 0;
+    margin: 0;
     pointer-events: none;
   }
 

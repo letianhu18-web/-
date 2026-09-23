@@ -132,23 +132,35 @@ p {
 
   .touch-controls {
     order: 2;
-    display: flex;
-    width: min(100%, 340px);
-    min-height: 164px;
-    flex-direction: column;
+    width: min(calc(100vw - 24px), 380px);
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "pad actions" "hint hint";
     align-items: center;
-    justify-content: center;
-    gap: 2px;
+    column-gap: clamp(8px, 3vw, 18px);
+    row-gap: 5px;
+    padding: 4px 0 6px;
+    box-sizing: border-box;
+    flex: none;
     touch-action: none;
     user-select: none;
     -webkit-user-select: none;
   }
 
   .touch-pad {
+    grid-area: pad;
     display: grid;
-    grid-template-columns: repeat(3, 58px);
-    grid-template-rows: repeat(3, 44px);
+    grid-template-columns: repeat(3, clamp(48px, 15vw, 58px));
+    grid-template-rows: repeat(3, 48px);
     gap: 4px;
+  }
+
+  .touch-actions {
+    grid-area: actions;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
   .touch-button {
@@ -176,22 +188,57 @@ p {
   .touch-button.left { grid-column: 1; grid-row: 2; }
   .touch-button.right { grid-column: 3; grid-row: 2; }
   .touch-button.down { grid-column: 2; grid-row: 3; }
-  .touch-button.action {
-    grid-column: 3;
-    grid-row: 3;
+  .touch-button.action-run,
+  .touch-button.action-jump {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
     color: #ffe08a;
-    font-size: 14px;
+    font-size: 20px;
+  }
+
+  .touch-button.action-jump {
+    background: rgba(226, 71, 56, 0.78);
+    color: #fff7df;
   }
 
   .touch-hint {
-    margin: 1px 0 0;
+    grid-area: hint;
+    margin: 0;
     color: rgba(255, 247, 223, 0.78);
-    font-size: 11px;
+    font-size: 10px;
+    line-height: 1.35;
   }
 
   .touch-hint.input-live {
     color: #ffe08a;
     font-weight: 700;
+  }
+}
+
+@media (max-width: 340px) and (pointer: coarse) {
+  .touch-controls {
+    width: calc(100vw - 12px);
+    column-gap: 6px;
+  }
+
+  .touch-pad {
+    grid-template-columns: repeat(3, 44px);
+    grid-template-rows: repeat(3, 42px);
+  }
+
+  .touch-actions {
+    gap: 5px;
+  }
+
+  .touch-button.action-run,
+  .touch-button.action-jump {
+    width: 50px;
+    height: 50px;
+  }
+
+  .touch-hint {
+    font-size: 9px;
   }
 }
 
@@ -255,16 +302,24 @@ p {
     pointer-events: auto;
   }
 
+  .touch-actions {
+    position: absolute;
+    right: max(10px, env(safe-area-inset-right));
+    bottom: max(8px, env(safe-area-inset-bottom));
+    pointer-events: auto;
+  }
+
   .touch-button {
     background: rgba(34, 50, 73, 0.62);
   }
 
   .touch-hint {
     position: absolute;
-    right: max(10px, env(safe-area-inset-right));
-    bottom: max(8px, env(safe-area-inset-bottom));
+    top: max(30px, calc(env(safe-area-inset-top) + 28px));
+    left: 50%;
     padding: 4px 7px;
     border-radius: 7px;
     background: rgba(17, 24, 39, 0.62);
+    transform: translateX(-50%);
   }
 }

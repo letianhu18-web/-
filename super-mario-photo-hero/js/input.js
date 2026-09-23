@@ -14,7 +14,7 @@
         if (!touchHint) return;
 
         var labels = [];
-        var names = { LEFT: '← 左移', RIGHT: '→ 右移', UP: '↑ 跳跃', DOWN: '↓ 下蹲', RUN: 'B 奔跑', JUMP: '跳跃' };
+        var names = { LEFT: '← 左移', RIGHT: '→ 右移', UP: '↑ 跳跃', DOWN: '↓ 下蹲', RUN: 'B 奔跑', JUMP: 'A 跳跃' };
         for (var key in pressedKeys) {
             if (pressedKeys.hasOwnProperty(key) && pressedKeys[key] && names[key]) labels.push(names[key]);
         }

@@ -10,6 +10,8 @@
 		this.powering = [];
 		this.bounce = false;
 		this.jumping = 0;
+		this.jumpHeld = false;
+		this.stageTransitionScheduled = false;
 		this.canJump = true;
 		this.invincibility = 0;
 		this.crouching = false;
@@ -104,13 +106,12 @@
 	}
 
 	Player.prototype.jump = function() {
+		this.jumpHeld = true;
 		if (this.vel[1] > 0) {
 			return;
 		}
-		if (this.jumping) {
-			this.jumping -= 1;
-		} else if (this.standing && this.canJump) {
-			this.jumping = 20;
+		if (!this.jumping && this.standing && this.canJump) {
+			this.jumping = 28;
 			this.canJump = false;
 			this.standing = false;
 			this.vel[1] = -6;
@@ -125,12 +126,12 @@
 	};
 
 	Player.prototype.noJump = function() {
+		this.jumpHeld = false;
 		this.canJump = true;
-		if (this.jumping) {
-			if (this.jumping <= 16) {
-				this.vel[1] = 0;
-				this.jumping = 0;
-			} else this.jumping -= 1;
+		if (this.jumping && this.vel[1] < 0) {
+			// A quick tap still hops; holding the button keeps the full-height arc.
+			this.vel[1] = Math.max(this.vel[1], -3.5);
+			this.jumping = 0;
 		}
 	};
 
@@ -234,7 +235,10 @@
 			}
 		}
 		else {
-			this.acc[1] = 0.25
+			this.acc[1] = this.jumpHeld && this.jumping > 0 && this.vel[1] < 0 ? 0.14 : 0.25;
+			if (this.jumpHeld && this.jumping > 0 && this.vel[1] < 0) {
+				this.jumping -= Math.max(1, Math.round(dt * 60));
+			}
 			if (this.pos[1] > 240) {
 				this.die();
 			}
@@ -257,14 +261,16 @@
 			this.left = false;
 			this.flagging = false;
 			this.vel[0] = 1.5;
-			if (this.pos[0] >= this.targetPos[0]) {
+			if (this.pos[0] >= this.targetPos[0] && !this.stageTransitionScheduled) {
+				this.stageTransitionScheduled = true;
 				this.sprite.hidden = true;
 				this.vel = [0,0];
 				window.setTimeout(function() {
 					player.sprite.hidden = false;
 					player.exiting = false;
 					player.noInput = false;
-					level.loader();
+					if (level.nextStage) level.nextStage();
+					else level.loader();
 					if (player.power !== 0) player.pos[1] -= 16;
 					music.overworld.currentTime = 0;
 				}, 5000);

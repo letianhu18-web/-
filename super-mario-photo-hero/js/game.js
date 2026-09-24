@@ -125,7 +125,7 @@ function init() {
     powerup: new Audio('sounds/powerup.wav'),
     stomp: new Audio('sounds/stomp.wav')
   };
-  Mario.oneone();
+  Mario.loadCampaignStage(0, false, false);
   lastTime = Date.now();
   main();
 }

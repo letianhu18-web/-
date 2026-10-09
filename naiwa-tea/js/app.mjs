@@ -67,7 +67,7 @@ game.on(e=>{
     case 'sip':scene?.sip();break;
     case 'review':ui.review(e);growthUI.render();if(game.data.storeLevel>=4&&game.random()<.3)game.later(1.1,()=>scene?.sitCustomer());if(e.rating===5){scene?.celebrate();audio.play('fiveStar');}else{scene?.moodFor('confused',.8);audio.play('badReview');}game.later(.22,()=>audio.play('cookies'));if(e.bonus){audio.play('combo');vibration(18);}if(e.lucky){audio.play('lucky');game.later(1.65,()=>ui.toast('今天运气不错！',1.2));}break;
     case 'leave':scene?.leave();$('remake-confirm').close();$('recipe-hint').close();break;
-    case 'dayEnd':audio.play('dayEnd');growthUI.render();townUI.summary();if(supportUI.schedule()){claimAuthorFeedbackToday();game.persist();}else if(claimAuthorFeedbackToday()){game.persist();openAuthor(true);}break;
+    case 'dayEnd':audio.play('dayEnd');growthUI.render();townUI.summary();supportUI.schedule();break;
     case 'notice':ui.toast(e.message,2);break;
     case 'shortMoney':ui.toast(`饼干还差${e.missing}个～`,1.8);ui.animate(document.querySelector('.wallet'),'short');break;
     case 'growth':growthUI.onGrowth(e);journalUI.renderHome();audio.play('upgrade');break;
@@ -146,28 +146,14 @@ $('summary').addEventListener('cancel',e=>e.preventDefault());
 $('settings-open').addEventListener('click',()=>{clickSound();settings.showModal();saveUI.render();$('sound-toggle').checked=game.data.settings.sound;$('vibration-toggle').checked=game.data.settings.vibration;$('reference-toggle').checked=game.data.tutorialState.referenceHintEnabled;$('effects-toggle').checked=game.data.settings.lowEffects===true;$('quality-select').value=quality;updatePause();});
 $('settings-back').addEventListener('click',()=>{clickSound();settings.close();updatePause();});
 settings.addEventListener('close',updatePause);
-const authorFeedbackDateKey='naiwa.teashop.authorFeedbackDate';
-function claimAuthorFeedbackToday(){
- if(game.data.settings.authorFeedbackDisabled)return false;
- const now=new Date(),today=[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-');
- let stored='';try{stored=storage?.getItem(authorFeedbackDateKey)||'';}catch{}
- if(game.data.authorFeedbackDate===today||stored===today)return false;
- game.data.authorFeedbackDate=today;
- try{storage?.setItem(authorFeedbackDateKey,today);}catch{}
- return true;
-}
 let authorReturnToSettings=false;
 $('author-page').addEventListener('close',()=>{
  if(authorReturnToSettings){authorReturnToSettings=false;settings.showModal();$('author-open').focus({preventScroll:true});}
 });
-$('author-disable-auto').addEventListener('change',e=>{game.data.settings.authorFeedbackDisabled=e.target.checked;game.persist();$('author-auto-status').textContent=e.target.checked?'已关闭，仍可在设置里查看':'已开启，营业结束后每天最多一次';});
-function openAuthor(afterDay=false){
- $('author-disable-auto').checked=game.data.settings.authorFeedbackDisabled===true;
- $('author-auto-status').textContent=game.data.settings.authorFeedbackDisabled?'已关闭，仍可在设置里查看':'仍可在设置里查看二维码';
- authorReturnToSettings=!afterDay&&settings.open;
+function openAuthor(){
+ authorReturnToSettings=settings.open;
  if(authorReturnToSettings)settings.close();
- $('author-feedback-note').textContent=afterDay?'今天辛苦啦！有建议或遇到问题，可以扫码给作者反馈。':'有建议或遇到问题，可以扫码给作者反馈。';
- for(const b of $('author-page').querySelectorAll('[data-close]')){b.setAttribute('aria-label',afterDay?'返回今日收益':'返回小店设置');if(!b.classList.contains('back'))b.textContent=afterDay?'先休息一下 · 查看今日收益':'返回小店设置';}
+ for(const b of $('author-page').querySelectorAll('[data-close]')){b.setAttribute('aria-label','返回小店设置');if(!b.classList.contains('back'))b.textContent='返回小店设置';}
  if(!$('author-page').open)$('author-page').showModal();
  $('author-page').scrollTop=0;
 }
@@ -232,3 +218,4 @@ resumeFrames();init();
 
 // Read-only state for compatible in-page agents; gameplay still uses the visible controls.
 if(document.modelContext?.registerTool){const lifecycle=new AbortController();try{Promise.resolve(document.modelContext.registerTool({name:'get_teashop_state',title:'查看奶茶铺营业状态',description:'Read the current day, cookies, order, and next preparation step without changing the game.',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:true},execute(input){if(!input||Object.keys(input).length)throw new Error('Expected an empty object');return{day:game.data.day,cookies:game.data.cookies,phase:game.phase,served:game.day?.served??0,goal:game.day?.goal??0,drink:game.drink?structuredClone(game.drink):null};}},{signal:lifecycle.signal})).catch(()=>{});}catch{}window.addEventListener('pagehide',()=>lifecycle.abort(),{once:true});}
+

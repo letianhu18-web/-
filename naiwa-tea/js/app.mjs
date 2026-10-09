@@ -146,18 +146,6 @@ $('summary').addEventListener('cancel',e=>e.preventDefault());
 $('settings-open').addEventListener('click',()=>{clickSound();settings.showModal();saveUI.render();$('sound-toggle').checked=game.data.settings.sound;$('vibration-toggle').checked=game.data.settings.vibration;$('reference-toggle').checked=game.data.tutorialState.referenceHintEnabled;$('effects-toggle').checked=game.data.settings.lowEffects===true;$('quality-select').value=quality;updatePause();});
 $('settings-back').addEventListener('click',()=>{clickSound();settings.close();updatePause();});
 settings.addEventListener('close',updatePause);
-let authorReturnToSettings=false;
-$('author-page').addEventListener('close',()=>{
- if(authorReturnToSettings){authorReturnToSettings=false;settings.showModal();$('author-open').focus({preventScroll:true});}
-});
-function openAuthor(){
- authorReturnToSettings=settings.open;
- if(authorReturnToSettings)settings.close();
- for(const b of $('author-page').querySelectorAll('[data-close]')){b.setAttribute('aria-label','返回小店设置');if(!b.classList.contains('back'))b.textContent='返回小店设置';}
- if(!$('author-page').open)$('author-page').showModal();
- $('author-page').scrollTop=0;
-}
-$('author-open').addEventListener('click',()=>{clickSound();openAuthor();});
 $('reset-open').addEventListener('click',()=>{clickSound();reset.showModal();updatePause();});
 for(const id of['reset-back','reset-cancel'])$(id).addEventListener('click',()=>{clickSound();reset.close();updatePause();});
 reset.addEventListener('close',updatePause);

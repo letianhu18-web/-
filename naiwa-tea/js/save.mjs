@@ -23,8 +23,8 @@ export class SaveSystem extends ResilientSave {
  exportText(data){return JSON.stringify({format:'naiwa-teashop',formatVersion:1,exportedAt:new Date().toISOString(),data},null,2);}
  decodeImport(text){if(typeof text!=='string'||text.length>2*1024*1024)throw Error('存档文件过大');let file;try{file=JSON.parse(text);}catch{throw Error('文件不是完整的 JSON 存档');}if(file?.format&&file.format!=='naiwa-teashop')throw Error('这不是奶蛙奶茶铺的存档');if(file?.formatVersion&&file.formatVersion!==1)throw Error('不支持这个备份格式');const raw=this.check(file?.format==='naiwa-teashop'?file.data:file);return this.validate(raw);}
  validate(raw){
-  this.check(raw);const s={...raw,...freshSave()},old=raw.version===1;
-  s.presentationVersion=5;s.authorFeedbackDay=num(raw.authorFeedbackDay,0,raw.day);s.authorFeedbackDate=typeof raw.authorFeedbackDate==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(raw.authorFeedbackDate)?raw.authorFeedbackDate:'';
+  this.check(raw);const s={...raw,...freshSave()},old=raw.version===1;delete s.authorFeedbackDay;delete s.authorFeedbackDate;delete s.settings.authorFeedbackDisabled;
+  s.presentationVersion=5;
   s.day=Math.max(1,num(raw.day,1,99999));for(const k of ['cookies','highestCombo','totalCustomers','streak'])s[k]=num(raw[k]);
   s.tutorialComplete=raw.tutorialComplete===true;s.settings.sound=raw.settings?.sound!==false;s.settings.vibration=raw.settings?.vibration!==false;
   s.unlocked=[...new Set([...s.unlocked,...Object.keys(drinkRecipes).filter(k=>drinkRecipes[k].day<=s.day),...(raw.unlocked||[]).filter(k=>drinkRecipes[k])])];
@@ -37,7 +37,7 @@ export class SaveSystem extends ResilientSave {
 
   const t=raw.tutorialState;s.tutorialState={version:4,iceGuideDone:t?.iceGuideDone===true,guidedCupCount:num(t?.guidedCupCount),referenceHintEnabled:t?.referenceHintEnabled===true,seenIceOrders:Array.isArray(t?.seenIceOrders)?t.seenIceOrders.filter(x=>[0,1,2].includes(x)):[],legacy:raw.version<4||t?.legacy===true};
   if(raw.version<4)s.tutorialComplete=true;
-  s.settings.authorFeedbackDisabled=raw.settings?.authorFeedbackDisabled===true;s.settings.lowEffects=raw.settings?.lowEffects===true;for(const k of ['manualCorrect','corrections','acceptedIngredients'])s.craftStats[k]=num(raw.craftStats?.[k]);s.craftStats.firstManual=raw.craftStats?.firstManual===true;
+  s.settings.lowEffects=raw.settings?.lowEffects===true;for(const k of ['manualCorrect','corrections','acceptedIngredients'])s.craftStats[k]=num(raw.craftStats?.[k]);s.craftStats.firstManual=raw.craftStats?.firstManual===true;
   s.rewardLedger=Object.fromEntries(Object.entries(raw.rewardLedger||{}).filter(([k,v])=>typeof k==='string'&&k.length<160&&v===true));
 
   normalizeTown(raw,s);const a=raw.active;if(a&&a.day===s.day){const goal=Math.max(1,num(a.goal,businessGoal(s),14)),served=num(a.served,0,goal);
@@ -55,3 +55,4 @@ export class SaveSystem extends ResilientSave {
   }const result=keepUnknown(raw,s);delete result.saveMeta;return result;
  }
 }
+

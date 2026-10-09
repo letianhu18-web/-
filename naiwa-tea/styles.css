@@ -243,14 +243,3 @@ body{overscroll-behavior:none}#game{max-width:480px;min-height:0;height:100dvh;m
 #game[data-mode="business"] #craft-desktop #ice-tools button#ice-remove.has-ice:not(:disabled){border-color:#43896e;background:#fff8dd;box-shadow:0 3px 0 #43896e66}
 #game[data-mode="business"] #craft-desktop #ice-tools button#ice-remove:active:not(:disabled){background:#e4ecd8}
 
-/* Author contact: keep the original code intact and readable. */
-#author-open{margin-top:12px}#author-page{width:min(calc(100% - 24px),430px);max-height:94dvh;padding:22px 18px 18px}#author-page .author-kicker{display:block;color:#72836b;font-size:12px;margin-top:6px}#author-page h2{margin:7px 0 4px;font-size:26px}#author-page .author-platform{font-size:13px;margin:0 0 12px;color:#55765f}#author-qr-image{display:block;margin:0 auto;width:min(100%,340px);height:auto;max-height:56dvh;object-fit:contain;background:#fff;border-radius:12px;user-select:auto}#author-page .author-scan-tip{margin:12px 0;font-size:13px;line-height:1.7}#author-page .secondary{min-height:48px}@media(max-height:620px){#author-page{padding:15px 14px}#author-page h2{font-size:22px}#author-qr-image{max-height:50dvh}#author-page .author-scan-tip{margin:8px 0}}
-
-#author-home-link{display:flex;align-items:center;justify-content:center;min-height:46px;margin:10px 0 12px;padding:10px 14px;border-radius:24px;background:var(--green);color:#fffaf0;font-size:15px;font-weight:800;text-decoration:none;touch-action:manipulation}#author-home-link:active{transform:scale(.97)}#author-home-link:focus-visible{outline:3px solid #eeaf35;outline-offset:3px}@media(max-height:740px){#author-qr-image{width:min(100%,340px,calc(94dvh - 350px));max-height:none}}@media(max-height:620px){#author-qr-image{width:min(100%,340px,34dvh);max-height:none}}
-
-/* Author view opens independently from settings; its entire content can scroll. */
-#author-page{position:fixed;inset:0;margin:auto;width:min(calc(100% - 24px),430px);max-height:calc(100dvh - 24px);overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;isolation:isolate;padding:18px}
-#author-page[open]{animation:none}
-#author-page .back{position:relative;float:none;display:block;margin:0 0 -32px;left:0;top:0;background:transparent}
-#author-qr-image{width:min(100%,300px);height:auto;max-height:none;aspect-ratio:1;object-fit:contain;flex-shrink:0}
-@media(max-height:700px){#author-page{padding:12px 16px}#author-qr-image{width:min(100%,240px,34dvh)}#author-page .author-platform{margin-bottom:6px}#author-feedback-note{margin-bottom:10px}#author-page .author-scan-tip{margin:8px 0}}

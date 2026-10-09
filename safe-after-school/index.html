@@ -1,0 +1,857 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="description" content="走過一整天的校園日常。以新聞案例與常見教學情境改編的互動遊戲《今天也要平安下班》。"><meta name="theme-color" content="#2c443a"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>今天也要平安下班</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* Layout: start sheet in a 560px column; in play, a full-screen top-down campus canvas under a blackboard HUD, events slide up as 聯絡簿 paper sheets */
+:root{
+  --paper:#eef1ea; --sheet:#fbfcf8; --ink:#1d2725; --muted:#5f6b66; --rule:#cfd8d0;
+  --blue:#2b4b9b; --red:#c3352b; --board:#2c443a; --board-ink:#eef3ea; --chalk:#f2d36b;
+  --good:#2f7a52; --shadow:0 1px 0 rgba(29,39,37,.08),0 6px 18px -10px rgba(29,39,37,.35);
+  --f-display:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --f-hand:"LXGW WenKai TC","Kaiti TC","DFKai-SB","BiauKai",serif;
+  --f-ui:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#121815; --sheet:#1b2320; --ink:#e4e9e3; --muted:#9aa7a0; --rule:#2c3833;
+  --blue:#93abff; --red:#ff6d5e; --board:#22362e; --board-ink:#eef3ea; --chalk:#f2d36b;
+  --good:#6fd39a; --shadow:0 1px 0 rgba(0,0,0,.4),0 8px 22px -12px rgba(0,0,0,.8); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#121815; --sheet:#1b2320; --ink:#e4e9e3; --muted:#9aa7a0; --rule:#2c3833;
+  --blue:#93abff; --red:#ff6d5e; --board:#22362e; --board-ink:#eef3ea; --chalk:#f2d36b;
+  --good:#6fd39a; --shadow:0 1px 0 rgba(0,0,0,.4),0 8px 22px -12px rgba(0,0,0,.8); color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-ui);font-size:15px;line-height:1.6}
+.wrap{max-width:560px;margin:0 auto;padding-inline:16px;padding-block:0 48px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+h1,h2,h3{text-wrap:balance;margin:0}
+
+/* Game shell */
+#game{position:fixed;inset:0;display:flex;flex-direction:column;background:#33402f;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.hud{background:var(--board);color:var(--board-ink);padding:8px 14px 9px;display:grid;gap:6px;border-bottom:3px solid #6b5132;flex:none}
+.hud-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.who{font-size:12px;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.clock{font-family:var(--f-display);font-weight:900;font-size:28px;line-height:1;font-variant-numeric:tabular-nums;color:var(--chalk)}
+.hud-right{display:flex;align-items:center;gap:10px}
+.peace{text-align:right;font-size:10px;letter-spacing:.08em;opacity:.85;line-height:1.3}
+.peace b{display:block;font-size:18px;letter-spacing:0;font-variant-numeric:tabular-nums;color:var(--board-ink)}
+.pausebtn{background:transparent;border:1px solid rgba(255,255,255,.35);color:var(--board-ink);border-radius:4px;padding:4px 8px;font-size:12px}
+.meters{display:grid;grid-template-columns:auto 1fr auto;gap:3px 8px;align-items:center;font-size:11px}
+.bar{height:7px;border-radius:2px;background:rgba(255,255,255,.14);overflow:hidden;position:relative}
+.bar i{display:block;height:100%;transition:width .5s ease}
+.bar.comp i{background:linear-gradient(90deg,#e9c46a,#e76f51 60%,#ff3b30)}
+.bar.stress i{background:#9ec5e8}
+.lvl{font-variant-numeric:tabular-nums;min-width:5.5em;text-align:right}
+.rels{display:flex;gap:5px;flex-wrap:wrap;font-size:10.5px}
+.rels span{padding:0 6px;border:1px solid rgba(255,255,255,.25);border-radius:999px;font-variant-numeric:tabular-nums}
+.goal{font-size:12px;color:var(--chalk);min-width:0}
+.goalrow{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;justify-content:space-between}
+.inv{display:flex;gap:4px;flex-wrap:wrap}
+.inv span{font-size:10.5px;color:#fff;padding:1px 6px;border-radius:3px}
+.snark{font-family:var(--f-hand);font-size:16px;line-height:1.6;color:var(--blue);margin:0}
+.snark b{font-family:var(--f-ui);font-size:12px;letter-spacing:.08em}
+.shieldmsg{border-left-color:var(--good)!important;background:color-mix(in srgb,var(--good) 10%,var(--sheet))!important}
+.disc{font-size:12px;color:var(--red);margin-top:10px;letter-spacing:.05em}
+.lede b{color:var(--red)}
+#stage{position:relative;flex:1;min-height:0;overflow:hidden}
+#cv{display:block;width:100%;height:100%;touch-action:none;user-select:none;-webkit-user-select:none}
+#toast{position:absolute;left:50%;bottom:44px;transform:translateX(-50%);max-width:calc(100% - 32px);background:rgba(20,26,23,.88);color:#f3f1e6;padding:7px 14px;border-radius:6px;font-size:13.5px;text-align:center;pointer-events:none;transition:opacity .3s;opacity:0}
+#toast.on{opacity:1}
+#shade{position:absolute;inset:0;background:rgba(10,14,12,.45)}
+#modal{position:absolute;left:0;right:0;bottom:0;max-height:86%;overflow-y:auto;padding:0 12px 14px;overscroll-behavior:contain}
+#modal .sheet{max-width:560px;margin:0 auto}
+#pauseMsg{position:absolute;inset:0;display:grid;place-items:center;background:rgba(10,14,12,.55);color:#fff;font-family:var(--f-display);font-size:28px;letter-spacing:.3em}
+.ctlhint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-size:12px;color:#fff;background:rgba(0,0,0,.45);padding:4px 10px;border-radius:999px;pointer-events:none;white-space:nowrap;transition:opacity .6s}
+
+/* Paper sheet */
+.sheet{background:var(--sheet);border:1px solid var(--rule);border-radius:4px;box-shadow:var(--shadow);margin-top:16px;padding:18px 18px 20px;position:relative;
+  background-image:repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule) 31px 32px);background-position:0 12px}
+.sheet-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.cat{font-family:var(--f-display);font-weight:900;color:var(--red);border:2px solid var(--red);padding:0 6px;border-radius:3px;letter-spacing:.1em;transform:rotate(-3deg);display:inline-block;background:var(--sheet)}
+.sheet h2{font-family:var(--f-display);font-weight:900;font-size:21px;line-height:1.35;margin-top:10px}
+.narr{font-family:var(--f-hand);font-size:17.5px;line-height:32px;margin:8px 0 0;max-width:60ch}
+.choices{display:grid;gap:9px;margin-top:14px}
+.card{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;padding:11px 13px;background:var(--sheet);border:1.5px solid var(--ink);border-radius:6px;box-shadow:3px 3px 0 var(--ink);transition:transform .12s, box-shadow .12s}
+.card:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.card:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.card .k{flex:none;width:26px;height:26px;border-radius:50%;border:1.5px solid var(--blue);color:var(--blue);font-weight:700;display:grid;place-items:center;font-size:13px}
+.card .t{min-width:0;font-size:15px;font-weight:500;line-height:1.5;padding-top:1px}
+.card[disabled]{opacity:.35;box-shadow:none;cursor:default;transform:none}
+.card.picked{opacity:1;border-color:var(--blue);box-shadow:3px 3px 0 var(--blue)}
+.hint3{font-size:12px;color:var(--muted);margin-top:8px}
+.result{margin-top:16px;padding-top:14px;border-top:2px dashed var(--rule);display:grid;gap:10px}
+.result .narr{margin:0}
+.stamp{justify-self:start;font-family:var(--f-display);font-weight:900;font-size:24px;color:var(--red);border:3px double var(--red);padding:2px 12px;letter-spacing:.15em;transform:rotate(-6deg);animation:slam .45s cubic-bezier(.2,1.6,.4,1) both}
+.stamp.calm{color:var(--good);border-color:var(--good);font-size:18px}
+@keyframes slam{from{transform:scale(2.4) rotate(-14deg);opacity:0}to{transform:scale(1) rotate(-6deg);opacity:1}}
+.reason{font-size:14px;color:var(--red);font-weight:500}
+.deltas{display:flex;flex-wrap:wrap;gap:6px}
+.deltas span{font-size:12px;padding:1px 8px;border-radius:3px;background:var(--paper);border:1px solid var(--rule);font-variant-numeric:tabular-nums}
+.deltas .bad{color:var(--red)}
+.deltas .ok{color:var(--good)}
+.issue{font-size:12px;color:var(--muted)}
+.issue b{color:var(--ink);font-weight:500}
+.omen{font-family:var(--f-hand);font-size:15px;color:var(--muted)}
+.alert{font-size:13px;padding:8px 10px;border-left:4px solid var(--red);background:color-mix(in srgb,var(--red) 8%,var(--sheet))}
+.go{justify-self:stretch;margin-top:4px;padding:12px;border:none;border-radius:6px;background:var(--ink);color:var(--sheet);font-weight:700;letter-spacing:.1em}
+
+/* Start */
+.hero{padding-block:36px 8px}
+.eyebrow{font-size:12px;letter-spacing:.2em;color:var(--muted)}
+.title{font-family:var(--f-display);font-weight:900;font-size:clamp(38px,11vw,60px);line-height:1.1;margin-top:8px;letter-spacing:.02em}
+.title em{font-style:normal;color:var(--red)}
+.tag{font-family:var(--f-hand);font-size:20px;margin-top:10px}
+.lede{color:var(--muted);max-width:52ch;margin-top:8px}
+.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:14px;font-size:13px}
+.how div{padding:8px 10px;border:1px solid var(--rule);border-radius:4px;background:var(--sheet)}
+.how b{display:block;font-size:13px}
+.tcard{margin-top:20px}
+.tname{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.tname h3{font-family:var(--f-display);font-size:22px}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 16px;margin-top:10px;font-size:13px}
+.stat{display:grid;grid-template-columns:5.5em 1fr 2em;gap:6px;align-items:center}
+.stat .bar{background:var(--rule);height:6px}
+.stat .bar i{background:var(--blue)}
+.stat span:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.talents{display:grid;gap:8px;margin-top:14px}
+.tal{padding:8px 10px;border:1px dashed var(--muted);border-radius:4px;background:var(--sheet)}
+.tal b{color:var(--red)}
+.tal p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+.sys{font-family:var(--f-hand);font-size:17px;margin-top:12px;color:var(--blue)}
+.row{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.row button{flex:1 1 140px;padding:12px;border-radius:6px;font-weight:700;letter-spacing:.08em}
+.primary{background:var(--red);color:#fff;border:none}
+.ghost{background:transparent;border:1.5px solid var(--ink)}
+.best{font-size:12px;color:var(--muted);margin-top:10px}
+
+.big-btn{display:block;width:100%;max-width:320px;margin-top:22px;padding:15px;border-radius:8px;font-size:17px;font-weight:700;letter-spacing:.1em}
+.lede b{color:var(--red);font-size:1.15em}
+.nth{font-size:18px;margin-top:10px}
+.nth b{font-family:var(--f-display);font-size:30px;color:#ff4b3e;font-variant-numeric:tabular-nums}
+.over.win .nth b{color:var(--red)}
+.realbox{margin-top:22px;padding:16px;border:1px solid rgba(255,255,255,.25);border-radius:6px;background:rgba(255,255,255,.04)}
+.realbox p{margin:8px 0 0;font-size:15.5px;line-height:1.75}
+.realtag{display:inline-block;font-family:var(--f-display);font-weight:900;color:#ff4b3e;border:2px solid #ff4b3e;padding:0 8px;letter-spacing:.15em;transform:rotate(-3deg)}
+.realbox .res{opacity:.85}
+.src{font-size:13px;opacity:.7}
+.over a{color:inherit}
+.hurt{font-family:var(--f-display);font-weight:900;font-size:19px;margin:0}
+.small{font-size:13.5px;opacity:.75;margin:10px 0 0;line-height:1.7}
+.skiplist{margin:10px 0 0;padding-left:1.4em;font-family:var(--f-hand);font-size:17px;line-height:1.8}
+.flow{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;font-size:11px;white-space:nowrap}
+.flow::-webkit-scrollbar{display:none}
+.flow span{padding:1px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.22);opacity:.6}
+.flow span.done{opacity:.35;text-decoration:line-through}
+.flow span.now{opacity:1;background:var(--chalk);color:#1d2725;border-color:var(--chalk);font-weight:700}
+#banner{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%) scale(.96);text-align:center;color:#fff;background:rgba(20,26,23,.86);padding:14px 26px;border-radius:10px;pointer-events:none;opacity:0;transition:opacity .35s,transform .35s;max-width:calc(100% - 32px)}
+#banner.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+#banner b{display:block;font-family:var(--f-display);font-size:30px;letter-spacing:.08em;color:var(--chalk)}
+#banner span{display:block;font-size:15px;margin-top:4px}
+.flowline{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.8}
+.sbtns{display:flex;gap:6px}
+.sbtn{background:transparent;border:1px solid rgba(255,255,255,.35);color:var(--board-ink);border-radius:4px;padding:2px 8px;font-size:11.5px}
+.speak{margin-left:auto;background:transparent;border:1px solid var(--blue);color:var(--blue);border-radius:999px;padding:1px 10px;font-size:12px}
+.realbox .speak{border-color:currentColor;color:inherit;margin-left:10px;vertical-align:middle;opacity:.8}
+/* Over */
+.over{position:fixed;inset:0;z-index:20;overflow-y:auto;background:#0d0f0e;color:#e9ece8;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.over.win{background:var(--paper);color:var(--ink)}
+.over .wrap{padding-block:40px 60px}
+.big{font-family:var(--f-display);font-weight:900;font-size:clamp(40px,12vw,64px);letter-spacing:.12em;line-height:1.1}
+.over:not(.win) .big{color:#ff4b3e;animation:fadein 1.2s ease both}
+@keyframes fadein{from{opacity:0;letter-spacing:.5em}to{opacity:1}}
+.crimes{margin:18px 0 0;padding-left:1.6em;font-family:var(--f-hand);font-size:18px;line-height:1.75}
+.crimes li.pad{opacity:.65}
+.sect{margin-top:28px;border-top:1px solid rgba(255,255,255,.18);padding-top:16px}
+.over.win .sect{border-top-color:var(--rule)}
+.sect h3{font-size:13px;letter-spacing:.2em;opacity:.7;font-weight:500}
+.report{display:grid;grid-template-columns:7em 1fr;gap:6px 12px;margin-top:10px;font-size:14px}
+.report dt{opacity:.65}
+.report dd{margin:0;min-width:0}
+.idx{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px}
+.idx div{font-size:12px;opacity:.75}
+.idx b{display:block;font-family:var(--f-display);font-size:28px;opacity:1;font-variant-numeric:tabular-nums}
+.ledger{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:8px;font-family:var(--f-hand);font-size:17px}
+.ledger li{display:grid;grid-template-columns:3.4em 1fr;gap:8px}
+.ledger time{font-family:var(--f-ui);font-size:12px;opacity:.6;padding-top:4px;font-variant-numeric:tabular-nums}
+.tribute{font-family:var(--f-hand);font-size:19px;line-height:1.9;margin-top:12px;max-width:34em}
+.tribute p{margin:0 0 10px}
+.over .row .ghost{border-color:currentColor}
+.ending-name{font-family:var(--f-display);font-weight:900;font-size:24px;color:var(--red);margin-top:6px}
+.fade-in{animation:rise .3s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<style>
+:root{--shadow:0 8px 30px -18px rgba(29,39,37,.45)}
+body{background-image:radial-gradient(var(--rule) .65px,transparent .65px);background-size:14px 14px}
+#startWrap{max-width:880px;padding:0 28px 36px}.start-nav{display:flex;align-items:center;justify-content:space-between;padding:26px 0 12px;border-bottom:1px solid var(--rule)}.brand{display:flex;align-items:center;gap:10px;font-size:13px;letter-spacing:.12em}.brand i{font-style:normal;background:var(--board);color:var(--chalk);width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-family:var(--f-display)}.theme-btn{background:var(--sheet);border:1px solid var(--rule);padding:7px 12px;border-radius:999px;font-size:12px}.hero{position:relative;padding:44px 0 0}.title{font-size:clamp(44px,8vw,76px);line-height:1.15}.tag{margin:18px 0 8px}.lede{font-size:14px;line-height:1.85;max-width:45ch}.hero>.eyebrow{margin:0 0 12px;color:var(--blue);letter-spacing:.12em}.campus-preview{position:absolute;right:0;top:55px;width:43%;overflow:hidden;border:6px solid var(--sheet);outline:1px solid var(--rule);border-radius:14px;transform:rotate(2deg);box-shadow:var(--shadow);background:var(--board)}.campus-preview canvas{width:100%;height:auto;display:block}.campus-preview>span{display:block;padding:10px 14px;color:var(--chalk);font-size:14px;font-variant-numeric:tabular-nums}.campus-preview>span>span{display:block;color:var(--board-ink);font-size:11px;margin-top:2px}.how{margin-top:32px;grid-template-columns:repeat(3,1fr);gap:12px}.how div{padding:16px;border-radius:10px;line-height:1.7;font-size:12px}.how b{margin-bottom:6px;font-size:13px}.how b span{font-variant-numeric:tabular-nums;color:var(--muted);margin-right:8px}.big-btn{max-width:none;box-shadow:0 5px 0 #842c25;margin-top:24px;padding:16px;transition:transform .15s}.big-btn:hover{transform:translateY(-2px)}.big-btn:active{transform:translateY(3px);box-shadow:0 2px 0 #842c25}.best{text-align:center;margin-top:14px}.record{text-align:center;font-size:12px;color:var(--muted);min-height:18px}.start-footer{margin-top:24px;padding-top:16px;border-top:1px solid var(--rule);font-family:var(--f-hand);font-size:18px;text-align:center;color:var(--muted)}.instructions{margin-top:20px;border:1px solid var(--rule);border-radius:8px;padding:12px 16px;background:var(--sheet);font-size:13px;color:var(--muted)}.instructions summary{cursor:pointer;color:var(--ink)}.instructions p{line-height:1.8}.day-progress{height:3px;background:#182b21;flex:none}.day-progress>div{height:100%;background:var(--chalk);transition:width .4s}.hud{padding:10px 20px;border-bottom:1px solid #6b5132;box-shadow:0 4px 12px #0002;z-index:1}.hud button{min-height:36px}.clock{font-size:30px}.flow{padding:4px 0}.flow span{padding:3px 10px}.goal{line-height:1.5}.goalrow{gap:6px 12px}.ctlhint{bottom:20px}.sheet{border-radius:12px;padding:22px 22px 24px}.sheet h2{font-size:24px}.card{padding:13px 14px;border-radius:8px;min-height:52px}.card.picked{opacity:1!important}.card:disabled.picked{opacity:1!important;color:var(--blue)}#modal{z-index:5;max-height:92%;padding-bottom:max(18px,env(safe-area-inset-bottom));}#shade{z-index:4}.go{min-height:46px}.pause-sheet{background:var(--sheet);color:var(--ink);padding:28px;border-radius:16px;max-width:340px;width:calc(100% - 40px);box-shadow:0 16px 50px #0004;font-family:var(--f-ui);font-size:14px;letter-spacing:0;line-height:1.6;text-align:center}.pause-sheet h2{font-family:var(--f-display);font-size:32px;margin:8px 0}.pause-sheet p{color:var(--muted)}.pause-sheet button{display:block;width:100%;padding:12px;margin-top:10px;border-radius:8px}.pause-help{font-size:12px;margin-top:22px}#pauseMsg{z-index:8;backdrop-filter:blur(4px)}.mobile-pad{display:none;position:absolute;left:18px;bottom:22px;grid-template-columns:repeat(3,42px);grid-template-rows:repeat(3,42px);gap:4px;z-index:2;touch-action:none}.mobile-pad button{background:#1d2725ce;color:#fff;border:1px solid #ffffff65;border-radius:10px;font-size:23px;touch-action:none;user-select:none;-webkit-user-select:none}.mobile-pad button.held{background:#f2d36b;color:#1d2725}.mobile-pad button:nth-child(1){grid-area:1/2}.mobile-pad button:nth-child(2){grid-area:2/1}.mobile-pad span{grid-area:2/2;display:grid;place-items:center;color:#fff;font-size:13px;background:#1d272575;border-radius:10px;pointer-events:none}.mobile-pad button:nth-child(4){grid-area:2/3}.mobile-pad button:nth-child(5){grid-area:3/2}.over .row button{min-height:48px}.over .wrap{max-width:660px;padding-inline:24px}.realbox{border-radius:12px}.src a{display:inline-block;padding:3px 0;text-underline-offset:4px}
+@media(max-width:680px){#startWrap{max-width:560px;padding-inline:20px}.hero{padding-top:28px}.campus-preview{position:relative;top:auto;right:auto;width:100%;margin:24px 0 0;transform:rotate(0);border-width:4px}.campus-preview canvas{height:185px;object-fit:cover;object-position:50% 45%}.campus-preview>span{display:flex;justify-content:space-between;align-items:center;padding:10px}.campus-preview>span>span{margin:0}.lede{max-width:none}.how{gap:7px;margin-top:20px}.how div{padding:10px;font-size:11px}.how b{font-size:12px}.how b span{display:block}.hud{padding:8px 12px}.hud-top{gap:6px}.hud-right{gap:8px}.goal{font-size:11px;flex:1 1 170px}.peace b{font-size:17px}.sheet{padding:18px 16px}.narr{font-size:17px;line-height:29px}.card .t{font-size:14px}.ctlhint{left:auto;right:10px;bottom:14px;transform:none;font-size:10px}.sbtns{margin-left:auto}}
+@media(pointer:coarse),(max-width:680px){.mobile-pad{display:grid}#toast{bottom:164px}.ctlhint{max-width:calc(100% - 175px);white-space:normal;text-align:right}.card:hover{transform:none}}
+@media(max-width:360px){#startWrap{padding-inline:14px}.how{grid-template-columns:1fr}.how b span{display:inline}.campus-preview>span{display:block}.title{font-size:44px}.sbtn{padding-inline:6px}}
+</style><div class="wrap" id="startWrap"><main id="main"></main></div>
+<div id="game" hidden>
+  <div class="hud">
+    <div class="hud-top">
+      <div style="min-width:0"><div class="who" id="who">第 1 天</div><div class="clock" id="clock">07:30</div></div>
+      <div class="hud-right">
+        <div class="peace">今天沒管的事<b id="skips">0</b></div>
+        <button class="pausebtn" id="pauseBtn" aria-label="暫停">暫停</button>
+      </div>
+    </div>
+    <div class="flow" id="flow"></div>
+    <div class="goalrow"><div class="goal" id="goal"></div><div class="sbtns"><button class="sbtn" id="sndBtn">聲音 開</button><button class="sbtn" id="voBtn">配音 關</button></div></div>
+  </div>
+  <div class="day-progress" aria-label="一天的進度"><div id="dayProgress"></div></div><div id="stage">
+    <canvas id="cv" aria-label="校園地圖"></canvas>
+    <div id="toast" role="status" aria-live="polite"></div>
+    <div id="banner"></div>
+    <div class="ctlhint" id="ctlhint">拖曳畫面移動 · 鍵盤用方向鍵</div>
+    <div id="pauseMsg" hidden role="dialog" aria-modal="true" aria-labelledby="pauseTitle"><section class="pause-sheet"><span class="eyebrow">先喘口氣</span><h2 id="pauseTitle">暫停中</h2><p>時間與校園事件都已暫停。</p><button class="primary" id="resumeBtn">繼續這一天</button><button class="ghost" id="homeBtn">回到首頁</button><p class="pause-help">方向鍵 / WASD 移動 · Esc 暫停<br>事件選項用 1–4 · Enter 繼續</p></section></div>
+    <div class="mobile-pad" id="mobilePad" aria-label="移動方向"><button data-dir="ArrowUp" aria-label="向上移動">↑</button><button data-dir="ArrowLeft" aria-label="向左移動">←</button><span aria-hidden="true">走</span><button data-dir="ArrowRight" aria-label="向右移動">→</button><button data-dir="ArrowDown" aria-label="向下移動">↓</button></div><div id="shade" hidden></div>
+    <div id="modal" role="dialog" aria-modal="true" aria-labelledby="eventTitle" hidden></div>
+  </div>
+</div>
+<div id="over" class="over" hidden></div>
+
+<script>
+/* ============ 真實案例資料 ============ */
+const SRC={
+  wj:{t:'世界日報',u:'https://www.worldjournal.com/wj/story/121221/9564862'},
+  mn:{t:'鏡新聞',u:'https://www.mnews.tw/story/mm-20260717pol001'},
+  et:{t:'ETtoday',u:'https://www.ettoday.net/news/20260731/3210792.htm'},
+  ph:{t:'聯合報',u:'https://udn.com/news/story/6885/9212907'},
+  vip:{t:'聯合報',u:'https://vip.udn.com/vip/story/122865/8726617'},
+  cp:{t:'聯合報',u:'https://udn.com/news/story/6885/7512039'},
+  pl:{t:'聯合報',u:'https://udn.com/news/story/6885/9558723'},
+  ck:{t:'聯合報',u:'https://udn.com/news/story/6839/9223375'},
+  ts:{t:'太報',u:'https://www.taisounds.com/news/content/125/212005'},
+  ab:{t:'聯合報',u:'https://udn.com/news/story/6898/9028657'},
+  ep:{t:'大紀元',u:'https://www.epochtimes.com/b5/26/1/12/n14674560.htm'},
+  cw:{t:'天下雜誌',u:'https://www.cw.com.tw/article/5141541'},
+  pk:{t:'聯合報',u:'https://udn.com/news/story/6885/9545062'},
+  pk2:{t:'TVBS',u:'https://news.tvbs.com.tw/life/3221092'},
+  wj2:{t:'世界日報',u:'https://www.worldjournal.com/wj/story/121221/8730337'}
+};
+const CASES=[
+ {id:'notebook',l:'cls off',ti:'聯絡簿',tx:'學生最近數學退步了。你要在聯絡簿上寫一句話。',
+  ch:[{l:'寫「數學是不是練習較少？」',rep:1},{l:'寫「今天表現很棒！」',r:'家長很開心。他的數學繼續退步。'},{l:'什麼都不寫',r:'聯絡簿上只有一個「閱」。'}],
+  real:'2024 年，台南一位國中老師在聯絡簿寫下「數學是不是練習較少？」。四個月內，她被投訴 40 多項。',
+  res:'第一次調查全部不成立。家長持續申訴後重查，4 項被認定成立。她被申誡、考績降等、獎金減半，還要寫 5,000 字自省。後來她提訴願，獲得平反。',src:['wj','mn']},
+ {id:'drinks',l:'cls',ti:'請喝飲料',tx:'全班最近表現很好，你想請大家喝飲料。',
+  ch:[{l:'在班上開放登記，請全班喝',rep:1},{l:'算了，不請了',r:'沒有人喝到飲料。也沒有人告你。'}],
+  real:'新北一位國小老師在班上開放登記，請學生喝飲料。一位女生沒登記到，所以沒拿到。家長控告老師霸凌，從小四告到國一，纏訟三年。',
+  res:'法院判定不構成霸凌：沒拿到的其實有 4 個人，而且是開放登記。三年過去了。',src:['et']},
+ {id:'photo',l:'cls sci',ti:'公開授課',tx:'今天公開授課，你想用手機拍下學生上課的樣子當紀錄。',
+  ch:[{l:'用手機拍照',rep:1},{l:'不拍了',r:'沒有照片，也就沒有紀錄。'}],
+  real:'2025 年 12 月，台中、苗栗、南投、高雄、新北二十多位老師接到相似的匿名檢舉，說他們違規用手機。實際上多半是在公開授課、研習時拍照。',
+  res:'有老師收到的「證據照片」是 2017 年拍的，那時還沒有手機管理規定。',src:['ph']},
+ {id:'boba',l:'shop gate',ti:'週末',tx:'下班了。你經過手搖飲店，點了一杯珍奶。',
+  ch:[{l:'喝',rep:1},{l:'放回去，不喝了',r:'你連珍奶都不敢喝了。'}],
+  real:'老師們整理的真實檢舉樣態裡，有一條是：「老師假日喝珍奶」。',
+  res:'報導沒有提供時間、地點和後續。只知道，這件事被檢舉了。',src:['vip']},
+ {id:'anthem',l:'fld gate',ti:'國歌',tx:'家長來問：「老師怎麼沒教孩子唱國歌？」你是自然老師。',
+  ch:[{l:'回答：「我教的是自然。」',rep:1},{l:'開始在自然課教唱國歌',r:'你的自然課變成了音樂課。'}],
+  real:'老師們整理的真實檢舉樣態裡，有一條是：「自然老師不教唱國歌」。',
+  res:'報導沒有提供時間、地點和後續。',src:['vip']},
+ {id:'copy',l:'cls',ti:'作業沒寫完',tx:'學生的作業又沒寫完。',
+  ch:[{l:'請他抄寫補完',rep:1},{l:'算了，不追了',r:'他鬆了一口氣。作業本空著。'}],
+  real:'2023 年報導：老師因為學生作業沒寫完，要學生抄寫。家長同時向學校、教育局、教育部檢舉老師不當管教、霸凌和體罰。',
+  res:'教師工會說：以前在班上就能處理的小衝突，現在只要家長要求，就會變成正式調查。',src:['cp']},
+ {id:'plum',l:'cls',ti:'話梅',tx:'上課時，有學生在吃話梅。',
+  ch:[{l:'請他站著聽一下課',rep:1},{l:'當作沒看到',r:'他吃完了一整包。'}],
+  real:'高雄一所國小，老師處理上課吃話梅的學生並要他罰站，被家長檢舉體罰、霸凌。',
+  res:'調查認定霸凌、體罰都不成立，但校事會議程序拖了約一年半，最後由教育局接手。',src:['pl']},
+ {id:'cookie',l:'cls',ti:'餅乾日',tx:'你用集點鼓勵學生，集滿點數可以參加「餅乾日」。兩位常遲到、缺交的學生沒集滿。',
+  ch:[{l:'照規則，他們不能參加',rep:1},{l:'讓全班都參加',r:'從此沒有人在乎點數了。'}],
+  real:'一位老師用集點制度辦「餅乾日」。兩位常遲到、缺交的學生沒參加，發生日糖果時剛好也不在。學生投訴老師用餅乾和糖果處罰人。',
+  res:'她被撤除導師職務、記一支小過、考績不佳。申訴後撤銷，校長又另記一過。',src:['ck']},
+ {id:'notes',l:'off',ti:'講義',tx:'畢業的學生回來，要你繼續印講義給他們。',
+  ch:[{l:'不再提供',rep:1},{l:'繼續印給他們',r:'你的影印量多了一倍。'}],
+  real:'新北一位歷史老師，停止提供講義給畢業的學生之後被檢舉。調查過程中，又被擴大成「霸凌」調查。',
+  res:'結果停聘一年。他回來以後，選擇退休。',src:['ts']},
+ {id:'poke',l:'cls',ti:'黑板前',tx:'你轉身在黑板寫字。有學生從背後，故意戳你的屁股。',
+  ch:[{l:'本能地把他推開',rep:1},{l:'忍住，假裝沒事繼續寫',r:'他笑了。下一節，他找了別人一起戳。'}],
+  real:'一位國小老師在黑板寫字時，學生從背後故意戳她的屁股，還想找其他同學一起做。她本能地推開學生，學生撞到了桌子。',
+  res:'班上 5 位學生作證，是那位學生故意的。調查小組仍認定：「即使學生是故意戳老師屁股，老師還是不應有傷害學生的行為」，記申誡一次。外聘委員的出席費、逐字稿和報告費，花了約 3 萬元。',src:['pk','pk2']},
+ {id:'single',l:'gate off',ti:'結婚了嗎',tx:'放學時，家長隨口問你：「老師結婚了嗎？」',
+  ch:[{l:'老實說：「還沒。」',rep:1},{l:'笑一笑，不回答',r:'家長點點頭，若有所思。'}],
+  real:'一位老師在網路上徵集老師們遇過的離奇投訴，其中一則是家長投訴：「老師是單身，會帶學生嗎？」',
+  res:'報導沒有提供時間、地點和後續。',src:['wj2']},
+ {id:'exciting',l:'cls',ti:'精彩的一課',tx:'你花了一整晚，準備了一堂很精彩的數學課。',
+  ch:[{l:'照計畫，上得精彩一點',rep:1},{l:'算了，照課本平平淡淡上',r:'學生睡了一半。今晚他們都會睡得很好。'}],
+  real:'老師們徵集的離奇投訴中，有一則是：數學課上得太精彩，孩子興奮到失眠睡不著。',
+  res:'報導沒有提供時間、地點和後續。',src:['wj2']},
+ {id:'fastfood',l:'shop gate',ti:'放假日',tx:'放假日，你在速食店吃炸雞。',
+  ch:[{l:'吃',rep:1},{l:'打包回家再吃',r:'你躲在家裡吃，安全多了。'}],
+  real:'老師們徵集的離奇投訴中，有老師放假吃速食，被投訴是「壞榜樣」。',
+  res:'報導沒有提供時間、地點和後續。',src:['wj2']},
+ {id:'tuition',l:'off adm',ti:'繳不出學費',tx:'有學生繳不出學費和住宿費。',
+  ch:[{l:'幫他付，並留下完整單據',rep:1},{l:'請他自己想辦法',r:'他低著頭走了。'}],
+  real:'有老師幫學生付學費和住宿費，所有單據都留著。',
+  res:'調查沒有找到任何挪用的證據，報告仍認定老師的做法「不合理」，建議解聘。',src:['ts']}
+];
+const ANON={ti:'匿名檢舉',real:'高雄一所學校，一個家庭在 18 個月內檢舉超過 25 件，學校光調查費就花了 70 多萬元。另一位老師被 5 位匿名家長檢舉，調查將近 3 個月。',
+  res:'結果不成立。2026 年 1 月起，教育部修法不再受理匿名檢舉。',src:['ab','ep']};
+const HURT={txt:'就算調查不成立：高雄一位推動閱讀的老師被調查 7 個月，指控全部不成立，仍因「親師溝通不良」被申誡，薪資加給和年終考績獎金都受影響。',src:'ab'};
+/* ============ 常見情境卡 ============
+   選項格式：[文字, 被檢舉機率, 檢舉內容] / [文字,'skip',結果]（沒管）/ [文字,'safe',結果] */
+function SC(id,l,ti,tx,ch){return {id,kind:'s',l,ti,tx,ch:ch.map(a=>a[1]==='skip'?{l:a[0],skip:1,r:a[2]}:a[1]==='safe'?{l:a[0],r:a[2]}:{l:a[0],p:a[1],z:a[2]})}}
+const SCENES=[
+/* 管教 */
+SC('s01','cls','上課講話','有學生整節課一直在講話。',[['走過去小聲提醒',.06,'老師站在孩子旁邊，讓孩子很有壓力。'],['點名提醒',.1,'老師在全班面前點名，孩子很丟臉。'],['當眾斥責',.9,'老師當眾斥責孩子。'],['不處理','skip','他講了一整節。旁邊的同學也聽不到課。']]),
+SC('s02','cls','趴睡','有學生整節課趴著睡覺。',[['輕聲叫醒',.06,'孩子很累，老師還硬把他叫醒。'],['下課再問他',.04,'老師下課把孩子留下來問話。'],['敲桌子叫醒',.85,'老師敲桌子嚇到孩子。'],['讓他睡','skip','他睡得很好。這節課他什麼都沒學到。']]),
+SC('s03','cls sci','上課吃東西','有學生在上課吃早餐。',[['請他先收起來',.05,'老師不讓孩子吃早餐。'],['先幫他保管，下課還',.12,'老師拿走孩子的私人物品。'],['當眾斥責',.9,'老師當眾斥責孩子。'],['不處理','skip','教室裡都是蛋餅的味道。']]),
+SC('s04','cls','作業沒交','學生這週第三次沒交作業。',[['提醒他補交',.05,'老師一直催，孩子壓力很大。'],['放學留下來寫完',.15,'老師沒經過家長同意，就把孩子留下來。'],['罰他做交互蹲跳',1,'老師體罰孩子。'],['不追了','skip','他的作業本，從此空著。']]),
+SC('s05','cls','頂嘴','學生說：「老師你管太多了。」',[['冷靜回應',.06,'老師跟孩子爭辯。'],['把這件事記錄下來',.04,'老師在蒐集孩子的黑資料。'],['回嗆他',.9,'老師跟學生吵架。'],['當作沒聽到','skip','全班都聽到了。下次會有更多人這樣說。']]),
+SC('s06','cls','唱反調','學生說：「你又不能拿我怎樣。」',[['下課找他個別談',.08,'老師私下約談孩子，孩子很害怕。'],['請學務處協助',.05,'老師把小事丟給學務處，給孩子貼標籤。'],['當眾跟他對質',.9,'老師在全班面前跟孩子對嗆。'],['冷處理','skip','他說對了。']]),
+SC('s07','cls','屢勸不聽','同一件事，你已經提醒他三次了。',[['再提醒一次',.08,'老師一直針對孩子。'],['寫下紀錄',.04,'老師在記孩子的名字。'],['忍不住大聲起來',.85,'老師對孩子大吼。'],['請行政支援',.05,'老師處理不了自己的班。']]),
+SC('s08','cls','踢椅子','學生故意一直踢前面同學的椅子。',[['立刻制止',.08,'老師制止的語氣很兇。'],['請他把椅子擺好',.06,'老師要孩子當眾整理椅子，很丟臉。'],['罰他站到後面',.9,'老師罰站，變相體罰。'],['大吼一聲',.95,'老師對孩子大吼。']]),
+SC('s09','cls','垃圾','學生把垃圾丟在地上。',[['請他撿起來',.05,'老師要孩子當眾撿垃圾，很丟臉。'],['全班一起罰掃地',.8,'老師連坐處罰全班。'],['自己撿起來','skip','你撿了。他看著你撿。'],['不處理','skip','垃圾留到放學。']]),
+SC('s10','cls gate','遲到','學生又遲到了。',[['依規定登記',.06,'孩子只是晚一點，老師就記錄。'],['問他原因',.04,'老師在全班面前追問孩子家裡的事。'],['說「怎麼又是你」',.85,'老師當眾羞辱孩子。'],['不處理','skip','明天他會更晚。']]),
+SC('s11','cls','起鬨','有學生偷吃零食，全班開始起鬨。',[['請他收起來',.05,'老師讓孩子在全班面前難堪。'],['沒收零食',.2,'老師沒收孩子的零食。'],['罵全班',.8,'老師遷怒全班。'],['笑一笑，繼續上課','skip','全班安靜不下來了。']]),
+SC('s13','cls sci','離開座位','學生上課一直起來走動。',[['幫他調整座位',.1,'老師把孩子調到角落，孤立孩子。'],['下課了解原因',.04,'老師私下約談孩子。'],['罰站',.9,'老師罰站，變相體罰。'],['大聲命令他坐下',.6,'老師對孩子大聲命令。']]),
+SC('s14','cls','不想寫','學生說：「我就是不想寫。」',[['問他原因',.05,'老師逼問孩子。'],['記錄下來',.03,'老師在蒐集孩子的資料。'],['說「不寫就記過」',.7,'老師威脅孩子要記過。'],['放棄','skip','你放棄了。他也是。']]),
+SC('s15','cls','你非常生氣','學生持續挑釁。你現在非常生氣。',[['深呼吸，先不說話',.02,'老師的沉默和表情讓孩子害怕。'],['先上課，晚點再處理','skip','你先上課。他贏了這一回合。'],['當場爆發',.95,'老師情緒失控。'],['把他叫到走廊罵',.9,'老師把孩子帶到走廊罵。']]),
+/* 一句話 */
+SC('w1','cls','又沒帶課本','學生又沒帶課本。你要說什麼？',[['「你怎麼又來了？」',.6,'老師說「你怎麼又來了」，孩子回家一直哭。'],['「跟旁邊同學一起看。」',.03,'老師讓孩子在全班面前被發現沒帶課本。'],['不說話，遞一本給他','safe','他小聲說謝謝。']]),
+SC('w2','cls off','簡單的題目','學生錯了一題很簡單的題目。',[['「這麼簡單也不會？」',.8,'家長看到考卷：老師嘲笑孩子。'],['在考卷上寫訂正說明',.04,'老師在考卷上寫了一大堆紅字。'],['什麼都不說','skip','他下次還是會錯。']]),
+SC('w3','cls off','不想念書','學生說他不想念書了。',[['「你這樣以後怎麼考高中？」',.6,'老師看不起孩子。'],['問他發生什麼事',.04,'老師探問孩子的家務事。'],['「隨便你。」',.5,'老師放棄孩子。'],['不回應','skip','他真的不念了。']]),
+SC('w4','cls','最吵的那一個','全班很吵，其中一個特別大聲。',[['「全班只有你最吵。」',.8,'老師公開羞辱孩子。'],['「你看看○○同學多安靜。」',.7,'老師公開比較孩子。'],['請全班安靜',.04,'老師連坐全班。'],['等他們自己安靜','skip','等到下課，都沒有安靜。']]),
+SC('w5','cls','同樣的錯','學生又犯了同樣的錯。',[['「再犯一次就找你爸媽。」',.5,'老師在威脅孩子嗎？'],['直接聯絡家長',.1,'老師小事就找家長，孩子回家被罵。'],['這次先不說','skip','他會再犯第三次。']]),
+SC('w6','cls','開個玩笑','氣氛很僵，你想開個玩笑。',[['拿學生的名字開玩笑',.7,'我覺得老師在笑我。'],['拿自己開玩笑',.03,'老師上課講與課程無關的事。'],['算了，不開玩笑','safe','教室很安靜。']]),
+/* 家長 */
+SC('p1','off gate','22:48 的 LINE','家長傳來：「老師，我想問一下今天的事情。」',[['立刻回覆',.05,'老師回覆的內容讓家長不舒服。'],['明早到校再回',.08,'老師沒有即時回應家長。'],['不回',.4,'老師已讀不回。'],['回「明天再說好嗎」',.2,'老師態度敷衍。']]),
+SC('p2','off','只有我孩子','家長：「為什麼只有我孩子被處理？」',[['說明事情經過',.08,'老師的說法跟孩子說的不一樣。'],['提供你的紀錄',.05,'老師一直在記錄我的孩子。'],['「因為他最嚴重。」',.8,'老師對孩子有偏見。'],['不回',.4,'老師拒絕溝通。']]),
+SC('p3','off gate','回家一直哭','家長：「孩子回家一直哭。」',[['先關心孩子的狀況',.05,'老師只會關心，不肯面對問題。'],['約時間當面談',.05,'老師要家長請假來學校。'],['說明你沒有做錯',.4,'老師完全不認錯。'],['「孩子可能比較敏感。」',.85,'老師說孩子太敏感。']]),
+SC('p4','off','不喜歡我孩子？','家長：「老師是不是不喜歡我孩子？」',[['說明你的處理原則',.06,'老師打官腔。'],['說明孩子最近的表現',.08,'老師只講孩子的缺點。'],['「你想太多了。」',.7,'老師輕視家長的感受。'],['不回',.4,'老師拒絕溝通。']]),
+SC('p5','off','要求道歉','家長：「請老師明天在全班面前道歉。」',[['照做','skip','你道歉了。全班都看到了。'],['請行政協助處理',.15,'老師拒絕道歉，還找行政施壓。'],['拒絕',.6,'老師拒絕為自己的行為道歉。'],['不回',.5,'老師拒絕溝通。']]),
+SC('p6','off adm','監視器','家長要求看教室監視器的畫面。',[['交給行政依程序處理',.05,'學校拖延，不給家長看畫面。'],['自己把畫面傳給家長',.8,'老師私自外流畫面，侵害其他學生的個資。'],['拒絕，然後吵起來',.85,'老師對家長態度惡劣。'],['不回',.4,'老師拒絕溝通。']]),
+SC('p7','off','群組質問','一位家長在班級群組公開問：「請老師說明。」29 位家長正在看。',[['在群組公開說明',.25,'老師在群組公開討論孩子的事。'],['私訊這位家長',.08,'老師私下施壓家長。'],['回「我們私下約時間談」',.05,'老師迴避公開說明。'],['不回',.5,'老師在群組裝死。']]),
+SC('p8','prin adm','家長找校長','家長直接去找校長。校長請你過去，你還不知道發生什麼事。',[['直接去校長室',.3,'家長直接向校長檢舉。'],['先整理這週的紀錄再去',.15,'家長直接向校長檢舉。'],['說你有課，下課再去',.4,'老師讓校長和家長等。']]),
+/* 手機 */
+SC('c1','cls','上課滑手機','學生上課在桌子底下滑手機。',[['提醒他收起來',.05,'老師在全班面前提醒孩子。'],['依校規暫時保管',.15,'老師扣留孩子的手機。'],['念出他螢幕上的內容',.95,'老師公開孩子的隱私。'],['不處理','skip','他滑了一整節。']]),
+SC('c2','cls','私人財物','你請學生交出手機。他說：「這是我的私人財物。」',[['算了，請他收好','skip','他繼續滑。'],['請學務處處理',.15,'老師把手機小事鬧大。'],['伸手去拿',.9,'老師搶孩子的東西。']]),
+SC('c3','cls sci','鏡頭','你發現有學生的手機鏡頭正對著你。',[['請他收起來',.1,'老師禁止孩子記錄上課內容。'],['當作沒看到，繼續上課',.15,'學生上傳剪過的影片：〈老師上課發瘋〉。'],['走過去拿他的手機',.9,'老師搶孩子的手機。']]),
+SC('c4','off cls','上了 IG','你發現上課的影片被放上 IG，已經 500 次觀看。',[['請學生刪掉',.15,'老師逼孩子刪文。'],['通報學校處理',.08,'老師把孩子的事鬧大。'],['留言回應',.8,'老師在網路上跟學生吵架。'],['當作沒看到','skip','觀看數變成 5,000。']]),
+SC('c5','cls off','梗圖','學生把你做成梗圖，全校都在傳。',[['跟著一起笑',.1,'老師跟學生玩梗，有失師表。'],['請他們停止',.1,'老師開不起玩笑，限制孩子的言論。'],['不理','skip','它會跟著你到退休。']]),
+/* 師生衝突 */
+SC('f1','cls','拍桌','學生突然用力拍桌。',[['冷靜請他坐下',.05,'老師沒有理解孩子的情緒。'],['請他到走廊冷靜',.12,'老師把孩子趕出教室。'],['你也拍桌',.95,'老師拍桌嚇到孩子。'],['不理他','skip','他發現拍桌有用。']]),
+SC('f2','cls','辱罵','學生用髒話罵你。',[['記錄並通報學務處',.08,'老師小題大作，要處分孩子。'],['下課個別談',.06,'老師私下約談孩子。'],['罵回去',.95,'老師對學生口出惡言。'],['當作沒聽到','skip','全班都聽到了。']]),
+SC('f3','cls','衝出教室','學生突然衝出教室。',[['追出去',.3,'老師丟下全班不管。'],['請隔壁老師看班，你再去找',.08,'老師沒有馬上去找孩子。'],['打電話給學務處',.06,'老師把孩子的事交給別人。'],['不追',.5,'學生離開教室，老師沒有處理。']]),
+SC('f4','cls fld','打架','兩個學生打起來了。',[['直接把他們拉開',.35,'老師抓我孩子的手。'],['大聲喝止',.15,'老師大吼，嚇到孩子。'],['請附近老師一起處理',.12,'老師沒有馬上處理，孩子被打。'],['不管',.8,'老師看著孩子被打。']]),
+SC('f5','cls fld','被推倒','有學生被同學推倒在地上。',[['把他扶起來',.15,'老師為什麼碰我孩子？'],['請他自己起來',.2,'孩子跌倒，老師冷眼旁觀。'],['送保健室',.06,'老師沒有先通知家長。']]),
+SC('f6','cls','有人在錄影','你很生氣，拍了一下桌子。沒有人受傷，但有人在錄影。',[['立刻向全班道歉',.2,'老師自己承認失控。'],['繼續上課',.4,'老師拍桌嚇到孩子。'],['請學生刪掉影片',.6,'老師拍桌，還逼孩子刪證據。']]),
+/* 教學 */
+SC('t1','adm off','進度','主任問：「為什麼你的班進度比別班慢？」',[['說明學生需要多練習',.03,'老師進度落後，影響孩子考試。'],['開始趕進度',.1,'老師上課太快，孩子跟不上。'],['說別班太快',.3,'老師不配合學校教學進度。']]),
+SC('t2','cls off','大量不及格','這次小考，全班一半不及格。',[['重教一次',.06,'老師進度太慢。'],['放學加開補救教學',.1,'老師放學留孩子補課。'],['調整計分方式',.2,'老師評分標準不一。'],['不處理','skip','下次會更多人不及格。']]),
+SC('t3','cls','又放影片','這週你已經放了兩次影片。',[['今天再放一次',.3,'老師上課都在放影片。'],['改回講課','safe','學生睡了一半。']]),
+SC('t4','cls','改不完的公文','你有一堆公文要交，想讓學生這節自習。',[['讓學生自習',.25,'老師上課不教，讓孩子自習。'],['照常上課，公文晚上做','safe','你今晚又不能準時睡了。']]),
+SC('t5','sci','做實驗','今天的自然課要做實驗。',[['照常做實驗',.15,'老師讓孩子做危險的實驗。'],['改看實驗影片',.08,'老師都不讓孩子做實驗。'],['老師示範，學生看',.04,'孩子什麼都沒做到。']]),
+SC('t6','cls','講自己的東西','學生說：「老師上課都在講自己的東西。」',[['改成照課本念','safe','學生睡了一半。'],['繼續你的方式',.15,'老師沒有照課本上課。'],['問大家想怎麼上',.06,'老師把教學責任丟給學生。']]),
+/* 成績 */
+SC('g1','off','差一分','家長：「只差一分，拜託老師。」',[['加分',.3,'其他家長：老師偏心加分。'],['拒絕，並說明標準',.15,'老師連一分都不肯給。'],['給他補交作業的機會',.08,'老師給特定學生特權。']]),
+SC('g2','off cls','你算錯了','你重新核對，發現自己真的算錯了一題。',[['立刻更正並道歉',.08,'老師連分數都算錯，專業不足。'],['更正，但不說',.3,'老師偷偷改分數。'],['不改了',.6,'老師知錯不改。']]),
+SC('g3','cls off','重考','學生要求重考。',[['讓他重考',.25,'其他家長：為什麼他可以重考？'],['不讓',.12,'老師不給孩子機會。'],['全班都可以重考',.06,'老師的考試沒有標準。']]),
+SC('g4','off','看考卷','家長要求看孩子的考卷。',[['拿給他看',.04,'老師的批改被逐題挑錯。'],['說要先問教務處',.12,'老師刁難家長。']]),
+SC('g5','cls','作弊','考試時，你看到學生在偷看小抄。',[['當場收卷',.4,'老師當眾羞辱孩子。'],['走過去站在他旁邊',.04,'老師站在旁邊，孩子很緊張。'],['考後私下談',.08,'老師沒有證據就說孩子作弊。'],['當作沒看到','skip','他考了全班第一。']]),
+SC('g6','off cls','出錯題','段考後，你發現自己出錯了一題。',[['全部送分',.15,'答對的學生家長：為什麼大家都送分？'],['那一題重考',.2,'老師要孩子為老師的錯重考。'],['只給答對的人分數',.15,'老師不承認自己出錯。']]),
+/* 個資 */
+SC('i1','cls off','班級照片','你想把班級活動照片放上社群。',[['放上去',.5,'老師沒經過同意，就公開孩子的照片。'],['只放背影',.08,'老師偷拍孩子背影。'],['不放了','safe','這次活動沒有留下照片。']]),
+SC('i2','cls off','得獎','學生得獎了，你想公開他的名字。',[['公開',.2,'老師公開孩子的個資。'],['私下恭喜他',.05,'老師都沒有公開表揚孩子。'],['只在班上說',.08,'沒得獎的孩子覺得被比較。']]),
+SC('i3','cls','排行榜','你想公布這次的成績排行榜。',[['公布',.6,'老師公開孩子的成績排名。'],['只給本人看',.04,'老師把成績藏起來，家長看不到。'],['不排了','safe','沒有人知道自己第幾名。']]),
+SC('i4','off','群組提醒','你想在班級群組提醒：「請某某同學不要再……」',[['照打',.8,'老師在群組公開點名孩子。'],['私訊那位家長',.06,'老師私下告狀。'],['算了，不提','skip','他明天還是會這樣。']]),
+SC('i5','off','Threads','你想在 Threads 發：「今天我們班有個學生……」',[['發',.6,'沒寫名字，大家也猜得出是我孩子。'],['改成認不出來的內容',.15,'還是被認出來了。'],['不發了','safe','你把這件事吞回去了。']])
+];
+/* 午餐、午休、打掃、輔導課、放學的常見情境 */
+SCENES.push(
+SC('l1','cls','挑食','學生把青菜全部倒進廚餘桶。',[['請他至少吃一口',.12,'老師強迫孩子吃不喜歡的食物。'],['跟他聊一下營養',.04,'老師在孩子吃飯的時候說教。'],['說「不吃就沒有點心」',.6,'老師用食物處罰孩子。'],['不管','skip','廚餘桶滿了。']]),
+SC('l2','cls','雞排','打菜的同學，給自己的好朋友多夾了一塊雞排。',[['請他重新分',.08,'老師在全班面前說孩子不公平。'],['換人打菜',.12,'老師撤掉孩子的打菜工作。'],['你自己來打',.05,'老師打給每個人的份量不一樣。'],['不管','skip','最後兩個人沒有雞排。']]),
+SC('l3','cls gate','家長送午餐','家長中午送了一份速食來，但班上規定吃營養午餐。',[['讓他吃',.15,'其他家長：為什麼他可以吃速食？'],['請家長依規定',.3,'老師不讓孩子吃家長送來的午餐。'],['讓他到走廊吃',.6,'老師把孩子趕到走廊吃飯。']]),
+SC('l4','cls','過敏','今天的湯裡有蝦，班上有學生對蝦過敏。',[['幫他另外準備',.04,'老師讓孩子在全班面前被特別對待。'],['提醒他自己注意',.25,'孩子吃了過敏，老師說「有提醒」。'],['通知午餐秘書處理',.05,'老師沒有馬上處理。']]),
+SC('n1','cls','不睡覺','午休時，有學生不趴下，在看漫畫。',[['請他趴下',.06,'午休是休息時間，老師不能強迫孩子睡覺。'],['沒收漫畫',.2,'老師沒收孩子的私人物品。'],['罰他站',.9,'老師午休罰站，變相體罰。'],['不管','skip','他看完了三本。']]),
+SC('n2','cls','悄悄話','午休時，後面兩個學生一直在講悄悄話。',[['走過去比「噓」',.05,'老師在孩子耳邊發出聲音，嚇到孩子。'],['把名字寫在黑板上',.3,'老師把孩子的名字寫在黑板上示眾。'],['記下來交給午休巡查',.1,'老師害全班被扣分。'],['不管','skip','全班都沒睡。']]),
+SC('n3','cls','要去保健室','午休時，學生說要去保健室。他看起來一點也不像不舒服。',[['讓他自己去',.08,'老師讓孩子一個人在走廊走動。'],['陪他去',.1,'老師丟下全班。'],['不讓他去',.5,'孩子不舒服，老師不讓他就醫。']]),
+SC('n4','cls','改作業','午休時間，你想趁機改一點作業。',[['改作業',.03,'老師午休沒在顧學生。'],['趴著休息一下',.1,'老師午休在睡覺。'],['在教室巡視','safe','作業留到晚上改。']]),
+SC('k1','fld cls','不掃地','打掃時間，有學生不掃地，在走廊玩。',[['請他回去掃',.05,'老師在走廊大聲叫孩子。'],['罰他多掃一區',.4,'老師罰孩子勞動服務。'],['叫他去掃廁所',.6,'老師用掃廁所處罰孩子。'],['自己幫他掃','skip','你掃完了他的區域。']]),
+SC('k2','fld cls','掃把','兩個學生拿掃把在打鬧。',[['立刻收走掃把',.1,'老師搶孩子手上的東西。'],['大聲制止',.15,'老師大吼。'],['請他們分開掃',.05,'老師處理太慢。'],['不管',.4,'孩子被掃把打到，老師就在旁邊。']]),
+SC('k3','fld cls','掃廁所','打掃廁所的學生問：「為什麼是我們掃廁所？」',[['說明是輪流的',.04,'老師打官腔。'],['換他們去掃教室',.1,'其他家長：為什麼換我家孩子掃廁所？'],['「掃就對了。」',.4,'老師態度強硬。']]),
+SC('u1','cls off','要去補習','家長：「輔導課可以不上嗎？他要去補習班。」',[['依學校規定處理',.1,'學校規定都是老師在說。'],['讓他先走',.2,'其他家長：為什麼他可以先走？'],['請家長去問教務處',.08,'老師推卸責任。']]),
+SC('u2','cls','想自習','輔導課，學生要求自習。',[['照常上課',.1,'輔導課還在趕進度，孩子壓力很大。'],['讓他們自習',.15,'輔導課有收費，老師卻讓孩子自習。'],['考小考',.12,'老師考試太多。']]),
+SC('u3','cls','少一個人','輔導課點名，發現少了一個人。',[['立刻通報學務處',.05,'老師把小事鬧大，孩子被記曠課。'],['先打給家長',.08,'老師害孩子回家被罵。'],['等他自己回來',.3,'孩子不見了，老師沒有處理。']]),
+SC('e1','gate','還沒來接','放學半小時了，一個學生的家長還沒來。',[['陪他一起等',.05,'老師放學後單獨跟孩子待在一起。'],['打電話給家長',.05,'老師打電話催家長。'],['請警衛室幫忙看',.15,'老師把孩子丟給警衛。'],['先下班',.5,'老師丟下孩子，自己下班。']])
+);
+
+/* ============ 聲音與配音 ============ */
+const AU=(()=>{
+  let ctx=null,master=null,music=null,sfx=null,timer=null,step=0,nextT=0,tempo=132,ducked=false,on=true;
+  try{on=localStorage.getItem('pinan_snd')!=='0'}catch(e){}
+  const mf=m=>440*Math.pow(2,(m-69)/12);
+  // 原創 8 小節旋律（八分音符；0 = 休止）
+  const MEL=[72,76,79,76,74,72,74,76, 77,76,74,72,71,72,74,0, 72,76,79,81,79,77,76,74, 72,74,76,74,72,0,67,0,
+             69,72,76,72,74,77,76,74, 72,71,69,71,72,0,74,76, 77,79,81,79,77,76,74,72, 71,72,74,71,72,0,0,0];
+  const BASS=[48,45,41,43,45,41,43,48];
+  function init(){
+    if(!ctx){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;ctx=new AC();
+      master=ctx.createGain();master.gain.value=on?1:0;master.connect(ctx.destination);
+      music=ctx.createGain();music.gain.value=.5;music.connect(master);sfx=ctx.createGain();sfx.gain.value=.9;sfx.connect(master)}
+    if(ctx.state==='suspended')ctx.resume();
+  }
+  function tone(f,t,d,type,vol,dest,att){const o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.value=f;
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+(att||.01));g.gain.exponentialRampToValueAtTime(.0001,t+d);
+    o.connect(g);g.connect(dest||sfx);o.start(t);o.stop(t+d+.05);return o}
+  function noise(t,d,vol,f1,f2,q){const len=Math.floor(ctx.sampleRate*d),b=ctx.createBuffer(1,len,ctx.sampleRate),a=b.getChannelData(0);for(let i=0;i<len;i++)a[i]=Math.random()*2-1;
+    const s=ctx.createBufferSource();s.buffer=b;const fl=ctx.createBiquadFilter();fl.type='bandpass';fl.Q.value=q||1;fl.frequency.setValueAtTime(f1,t);fl.frequency.exponentialRampToValueAtTime(f2,t+d);
+    const g=ctx.createGain();g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);s.connect(fl);fl.connect(g);g.connect(sfx);s.start(t);s.stop(t+d)}
+  function sched(){if(!ctx)return;const e=60/tempo/2;
+    while(nextT<ctx.currentTime+.15){const i=step%MEL.length,m=MEL[i];
+      if(m)tone(mf(m),nextT,e*.9,'square',.05,music);
+      if(i%2===0){const bm=BASS[Math.floor(i/8)%BASS.length]+(i%4===2?7:0);tone(mf(bm),nextT,e*1.8,'triangle',.12,music)}
+      if(i%4===2)noise(nextT,.05,.05,6000,8000,2);
+      nextT+=e;step++}}
+  function bgmStart(){if(!ctx)return;bgmStop();step=0;nextT=ctx.currentTime+.6;timer=setInterval(sched,30)}
+  function bgmStop(){if(timer){clearInterval(timer);timer=null}}
+  function setTempo(v){tempo=v}
+  function duck(v){if(!ctx||ducked===v)return;ducked=v;music.gain.setTargetAtTime(v?.18:.5,ctx.currentTime,.15)}
+  function bell(){if(!ctx)return;const N=[68,66,64,59, 64,68,66,59],t0=ctx.currentTime+.05;
+    N.forEach((m,i)=>{const t=t0+i*.5+(i>=4?.35:0),f=mf(m);tone(f,t,1.6,'sine',.18,sfx,.005);tone(f*2.01,t,.8,'sine',.05,sfx,.005);tone(f*3.02,t,.4,'sine',.025,sfx,.005)})}
+  function whoosh(){if(!ctx)return;noise(ctx.currentTime,.45,.35,400,2400,1.5)}
+  function stamp(){if(!ctx)return;const t=ctx.currentTime;noise(t,.12,.6,1200,300,.7);const o=tone(120,t,.35,'sine',.5);o.frequency.exponentialRampToValueAtTime(45,t+.3)}
+  function click(){if(!ctx)return;noise(ctx.currentTime,.06,.15,2500,1500,3)}
+  function doom(){if(!ctx)return;const t=ctx.currentTime+.1;tone(55,t,3.2,'sawtooth',.12,sfx,.3);tone(58.3,t,3.2,'sawtooth',.08,sfx,.3);tone(110,t+.05,1.2,'sine',.15)}
+  function fanfare(){if(!ctx)return;const t=ctx.currentTime+.05;[72,76,79,84].forEach((m,i)=>tone(mf(m),t+i*.13,i===3?.9:.25,'square',.08));tone(mf(60),t+.39,.9,'triangle',.15)}
+  function setOn(v){on=v;try{localStorage.setItem('pinan_snd',v?'1':'0')}catch(e){}if(master&&ctx)master.gain.setTargetAtTime(v?1:0,ctx.currentTime,.05)}
+  function pause(v){if(!ctx)return;v?ctx.suspend():ctx.resume()}
+  return {init,bgmStart,bgmStop,setTempo,duck,bell,whoosh,stamp,click,doom,fanfare,setOn,pause,get on(){return on}};
+})();
+const VO=(()=>{
+  const ok=typeof speechSynthesis!=='undefined'&&typeof SpeechSynthesisUtterance!=='undefined';
+  let voice=null,auto=false;
+  try{auto=localStorage.getItem('pinan_vo')==='1'}catch(e){}
+  function pickVoice(){if(!ok)return;const vs=speechSynthesis.getVoices();voice=vs.find(v=>/zh[-_]TW/i.test(v.lang))||vs.find(v=>/zh/i.test(v.lang))||null}
+  if(ok){pickVoice();try{speechSynthesis.addEventListener('voiceschanged',pickVoice)}catch(e){}}
+  function speak(text){if(!ok)return false;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang=voice?voice.lang:'zh-TW';if(voice)u.voice=voice;u.rate=1.05;speechSynthesis.speak(u);return true}catch(e){return false}}
+  function stop(){if(ok)try{speechSynthesis.cancel()}catch(e){}}
+  function setAuto(v){auto=v;try{localStorage.setItem('pinan_vo',v?'1':'0')}catch(e){}if(!v)stop()}
+  return {ok,speak,stop,setAuto,get auto(){return auto}};
+})();
+function cardSpeech(c){return `${c.ti}。${c.tx}`+c.ch.map((x,i)=>`。${'ABCD'[i]}，${x.l}`).join('')}
+function syncAudioBtns(){const s=$('sndBtn'),v=$('voBtn');if(s)s.textContent=AU.on?'聲音 開':'聲音 關';if(v){v.hidden=!VO.ok;v.textContent=VO.auto?'配音 開':'配音 關'}}
+
+/* ============ 引擎 ============ */
+const R=Math.random;
+const rint=(a,b)=>a+Math.floor(R()*(b-a+1));
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const pick=a=>a[Math.floor(R()*a.length)];
+const fmt=t=>String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');
+const BASE=2486;
+let S=null;
+let frameId=0, focusBeforeCase=null;
+function stopLoop(){running=false;cancelAnimationFrame(frameId);frameId=0;}
+/* ============ 校園地圖 ============ */
+const TS=32,MW=38,MH=28,MPS=1.6;
+const ROOMS=[
+ {id:'cls7',loc:'cls',n:'你的班',x:1,y:1,w:8,h:5,dx:5,dy:5,c:'#d4b07a',out:1},
+ {id:'cls8',loc:'cls',n:'八年級教室',x:10,y:1,w:7,h:5,dx:13,dy:5,c:'#d4b07a',out:1},
+ {id:'sci',loc:'sci',n:'自然教室',x:18,y:1,w:7,h:5,dx:21,dy:5,c:'#9cc0b2',out:1},
+ {id:'nur',loc:null,n:'保健室',x:26,y:1,w:4,h:5,dx:27,dy:5,c:'#ece6da',out:1},
+ {id:'wc',loc:null,n:'廁所',x:31,y:1,w:2,h:5,dx:31,dy:5,c:'#b3cadb',out:1},
+ {id:'shop',loc:'shop',n:'合作社',x:34,y:1,w:3,h:5,dx:35,dy:5,c:'#e8bb62',out:1},
+ {id:'off',loc:'off',n:'教師辦公室',x:1,y:9,w:8,h:5,dx:4,dy:9,c:'#c1aad0',out:-1},
+ {id:'adm',loc:'adm',n:'行政處室',x:10,y:9,w:7,h:5,dx:13,dy:9,c:'#a6b0cc',out:-1},
+ {id:'mtg',loc:null,n:'會議室',x:1,y:16,w:8,h:5,dx:4,dy:16,c:'#9a7a6c',out:-1},
+ {id:'prin',loc:null,n:'校長室',x:10,y:16,w:7,h:5,dx:13,dy:16,c:'#86584b',out:-1},
+ {id:'gate',loc:'gate',n:'警衛室',x:11,y:23,w:3,h:2,dx:12,dy:23,c:'#a8a898',out:-1}
+];
+const TREES=[[2,23],[5,25],[8,23],[3,26],[7,26],[21,9],[36,9],[21,26],[36,26],[9,22]];
+const FIELD={x:24,y:12,w:10,h:10};
+let grid=[];
+function fillG(x,y,w,h,v){for(let j=y;j<y+h;j++)for(let i=x;i<x+w;i++)grid[j][i]=v}
+function buildWorld(){
+  grid=Array.from({length:MH},()=>Array(MW).fill(0));
+  for(let x=0;x<MW;x++){grid[0][x]=1;grid[MH-1][x]=1}
+  for(let y=0;y<MH;y++){grid[y][0]=1;grid[y][MW-1]=1}
+  fillG(21,9,16,18,2);fillG(1,22,9,5,2);
+  ROOMS.forEach(r=>{fillG(r.x,r.y,r.w,r.h,1);grid[r.dy][r.dx]=3});
+  TREES.forEach(([x,y])=>grid[y][x]=4);
+  grid[MH-1][18]=5;grid[MH-1][19]=5;
+}
+function walkable(x,y){const tx=Math.floor(x),ty=Math.floor(y);if(tx<0||ty<0||tx>=MW||ty>=MH)return false;const c=grid[ty][tx];if(c===5)return exitOpen();return c===0||c===2}
+function blocked(x,y,r){return !walkable(x-r,y-r)||!walkable(x+r,y-r)||!walkable(x-r,y+r)||!walkable(x+r,y+r)}
+function moveEnt(e,dx,dy,r){const ox=e.x,oy=e.y;if(!blocked(e.x+dx,e.y,r))e.x+=dx;if(!blocked(e.x,e.y+dy,r))e.y+=dy;return Math.hypot(e.x-ox,e.y-oy)}
+function randTile(near,rad){for(let k=0;k<60;k++){const x=near?clamp(Math.floor(near.x)+rint(-rad,rad),1,MW-2):rint(1,MW-2);const y=near?clamp(Math.floor(near.y)+rint(-rad,rad),1,MH-2):rint(1,MH-2);const c=grid[y][x];if(c===0||c===2)return {x:x+.5,y:y+.5}}return {x:19,y:7}}
+
+/* ============ 一天的流程 ============ */
+const TAG={notebook:'M',copy:'M',s10:'M',s03:'M',s04:'M',w1:'M',p1:'M',
+  photo:'C',plum:'C',poke:'C',exciting:'C',single:'F',fastfood:'B',cookie:'C',s01:'C',s02:'C',s05:'C',s06:'C',s07:'C',s08:'C',s11:'C',s13:'C',s14:'C',s15:'C',w2:'C',w3:'C',w4:'C',w5:'C',w6:'C',c1:'C',c2:'C',c3:'C',f1:'C',f2:'C',f3:'C',f6:'C',t2:'C',t3:'C',t4:'C',t5:'C',t6:'C',g2:'C',g5:'C',g6:'C',
+  drinks:'B',anthem:'B',notes:'B',tuition:'B',f4:'B',f5:'B',c4:'B',c5:'B',s09:'B',t1:'B',g3:'B',i1:'B',i2:'B',i3:'B',i4:'B',i5:'B',p7:'B',
+  l1:'L',l2:'L',l3:'L',l4:'L',n1:'N',n2:'N',n3:'N',n4:'N',k1:'K',k2:'K',k3:'K',u1:'T',u2:'T',u3:'T',
+  e1:'F',p2:'F',p3:'F',p4:'F',p5:'F',p6:'F',p8:'F',g1:'F',g4:'F',boba:'Z'};
+const ALL=CASES.map(c=>Object.assign({kind:'r'},c,{ch:c.ch.map(x=>x.rep?x:Object.assign({skip:1},x))})).concat(SCENES).map(c=>Object.assign(c,{tag:TAG[c.id]||'C'}));
+const BYID=Object.fromEntries(ALL.map(c=>[c.id,c]));
+function drawCard(tag){
+  let pool=ALL.filter(c=>c.tag===tag&&!S.used.has(c.id));
+  if(!pool.length)pool=ALL.filter(c=>(c.tag==='C'||c.tag==='B')&&!S.used.has(c.id));
+  if(!pool.length)pool=ALL.filter(c=>c.tag===tag);
+  const r=pool.filter(c=>c.kind==='r'),s=pool.filter(c=>c.kind==='s');
+  return (r.length&&(R()<.3||!s.length))?pick(r):pick(s);
+}
+const PHASES=[
+ {n:'早自習',t:450,end:479,dest:'cls7',k:2,tag:'M',lim:22},
+ {n:'上課',t:480,end:525,dest:'pick',k:3,tag:'C',lim:20},
+ {n:'下課',t:525,end:535,free:20,tag:'B'},
+ {n:'午餐',t:720,end:755,dest:'cls7',k:1,tag:'L',lim:20},
+ {n:'午休',t:760,end:800,dest:'cls7',k:1,tag:'N',lim:16},
+ {n:'上課',t:810,end:855,dest:'pick',k:2,tag:'C',lim:20},
+ {n:'下課',t:855,end:865,free:18,tag:'B'},
+ {n:'打掃',t:925,end:940,dest:'fld',k:1,tag:'K',lim:20},
+ {n:'輔導課',t:950,end:995,dest:'cls8',k:1,tag:'T',lim:20},
+ {n:'放學',t:995,end:1020,dest:'gate',k:2,tag:'F',lim:22},
+ {n:'下班',t:1020,end:1050,dest:'exit',k:0,tag:'Z',lim:30}
+];
+const LATE={id:'late',kind:'s',ti:'鐘響了',tx:'鐘聲響了，你還沒走到。',ch:[{l:'跑過去，跟學生道歉',p:.15,z:'老師遲到，讓孩子自己待在教室。'},{l:'若無其事地走進去',p:.3,z:'老師上課遲到。'}]};
+function newRun(day){
+  S={day:day||1,t:450,used:new Set(),skips:[],dead:false,won:false,ph:-1,phT:0,arrived:false,late:false,left:0,dest:null,paperT:9,doorCool:{}};
+}
+const exitOpen=()=>S&&S.ph===10;
+let P,NPCS,running=false,paused=false,userPaused=false,last=0,grace=0,keys={},joy=null,camX=0,camY=0,zoom=1,dpr=1,cvW=0,cvH=0,walkT=0,staticCv=null,toastT=null,bannerT=null,hintShown=0;
+const BAGS=['#d0453a','#2e6db4','#e0a526','#3a9a62','#8a4fb3'];
+const roomById=id=>ROOMS.find(r=>r.id===id);
+function destName(){return S.dest==='fld'?'操場':S.dest==='exit'?'校門口':roomById(S.dest).n}
+function destPoint(){if(S.dest==='fld')return {x:FIELD.x+FIELD.w/2,y:FIELD.y+FIELD.h/2};if(S.dest==='exit')return {x:19,y:MH-.5};const r=roomById(S.dest);return {x:r.dx+.5,y:r.dy+.5}}
+function initWorld(){
+  P={x:19,y:26.1,fx:0,fy:-1,moving:false};NPCS=[];
+  for(let i=0;i<5;i++){const p=randTile(null);NPCS.push({type:'student',x:p.x,y:p.y,spd:1.6+R()*.6,cool:0,bag:BAGS[i],tgt:null,stuck:0})}
+}
+function spawnParent(n,fast){for(let i=0;i<n;i++)NPCS.push({type:'parent',x:18.5+R(),y:26.4,spd:fast?2.8:2.2,cool:0,life:40,tgt:null,stuck:0,detour:0})}
+function spawnPaper(){const src=NPCS.length&&R()<.7?pick(NPCS):{x:P.x+(R()<.5?-7:7),y:P.y-5};const dx=P.x-src.x,dy=P.y-src.y,L=Math.hypot(dx,dy)||1;
+  AU.whoosh();S.papers=S.papers||[];S.papers.push({x:src.x,y:src.y,vx:0,vy:0,wait:.55,life:3,rot:0});toast('匿名檢舉瞄準你了！')}
+function updNPC(n,dt){
+  if(n.type==='parent'){n.life-=dt;
+    if(n.life<=0||n.cool>0){n.tgt={x:19,y:26.6};if(Math.hypot(n.x-19,n.y-26.6)<.6){n.gone=true;return}}
+    else if(n.detour<=0)n.tgt={x:P.x,y:P.y}}
+  else if(!n.tgt||Math.hypot(n.tgt.x-n.x,n.tgt.y-n.y)<.3)n.tgt=randTile(n,7);
+  if(n.detour>0)n.detour-=dt;
+  const dx=n.tgt.x-n.x,dy=n.tgt.y-n.y,L=Math.hypot(dx,dy)||1,s=n.spd*dt;
+  const m=moveEnt(n,dx/L*s,dy/L*s,.28);n.walk=(n.walk||0)+m*3;n.fx=dx/L;n.fy=dy/L;
+  if(m<s*.3){n.stuck+=dt;if(n.stuck>.5){n.tgt=randTile(n,4);n.detour=1.4;n.stuck=0}}else n.stuck=0;
+  if(n.type==='student'&&n.cool>0)n.cool-=dt;
+}
+function atDest(){
+  if(S.dest==='fld')return P.x>FIELD.x&&P.x<FIELD.x+FIELD.w&&P.y>FIELD.y&&P.y<FIELD.y+FIELD.h;
+  if(S.dest==='exit')return P.y>MH-1.15;
+  const r=roomById(S.dest);return Math.hypot(P.x-(r.dx+.5),P.y-(r.dy+.5))<1.05;
+}
+function startPhase(i){
+  S.ph=i;const ph=PHASES[i];AU.bell();AU.setTempo(i>=7?152:i>=5?140:132);S.t=ph.t;S.phT=0;S.arrived=false;S.late=false;S.left=ph.k||0;S.papers=[];
+  S.dest=ph.free?null:(ph.dest==='pick'?pick(['cls8','sci','cls7']):ph.dest);
+  if(ph.n==='下課')spawnParent(1);
+  if(ph.n==='放學')spawnParent(2);
+  if(ph.n==='下班')spawnParent(3,true);
+  banner(`${fmt(ph.t)}　${ph.n}`,ph.free?'自由走動。小心被叫住。':`走到 ${destName()}`);
+  hud();
+}
+function nextPhase(){if(S.ph+1>=PHASES.length)return renderWin();startPhase(S.ph+1)}
+function arrive(){
+  S.arrived=true;const ph=PHASES[S.ph];
+  if(S.dest==='exit')return openCase(BYID.boba,'下班路上',()=>renderWin());
+  runCards();
+}
+function runCards(){
+  const ph=PHASES[S.ph];
+  if(S.left<=0){nextPhase();return}
+  S.left--;openCase(drawCard(ph.tag),`${ph.n}・${destName()}`,()=>runCards());
+}
+function phaseLimit(){const ph=PHASES[S.ph];return ph.free||ph.lim}
+
+function update(dt){
+  let ix=0,iy=0;
+  if(keys.ArrowLeft||keys.a)ix-=1;if(keys.ArrowRight||keys.d)ix+=1;if(keys.ArrowUp||keys.w)iy-=1;if(keys.ArrowDown||keys.s)iy+=1;
+  if(joy){const jx=(joy.x-joy.ox)/42,jy=(joy.y-joy.oy)/42,L=Math.hypot(jx,jy);if(L>.15){ix=jx/Math.max(1,L);iy=jy/Math.max(1,L)}}
+  const L=Math.hypot(ix,iy);P.moving=L>.1;
+  if(P.moving){const nx=ix/Math.max(1,L),ny=iy/Math.max(1,L),h=Math.hypot(nx,ny)||1;P.fx=nx/h;P.fy=ny/h;walkT+=moveEnt(P,nx*4.3*dt,ny*4.3*dt,.3);
+    if(!hintShown){hintShown=1;$('ctlhint').style.opacity=0}}
+  NPCS.forEach(n=>updNPC(n,dt));NPCS=NPCS.filter(n=>!n.gone);
+  const ph=PHASES[S.ph];S.phT+=dt;
+  const nt=Math.min(ph.end,ph.t+Math.floor(S.phT/phaseLimit()*(ph.end-ph.t)));if(nt!==S.t){S.t=nt;hud()}
+  // 投訴單
+  S.paperT-=dt;if(S.paperT<=0){S.paperT=rint(12,20);spawnPaper()}
+  for(let i=S.papers.length-1;i>=0;i--){const p=S.papers[i];if(p.wait>0){p.wait-=dt;if(p.wait<=0){const dx=P.x-p.x,dy=P.y-p.y,L=Math.hypot(dx,dy)||1;p.vx=dx/L*8;p.vy=dy/L*8}continue}p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=dt;p.rot+=dt*8;
+    if(Math.hypot(p.x-P.x,p.y-P.y)<.55){S.papers.splice(i,1);return sendToMeeting(ANON,'被一張匿名檢舉打中')}
+    if(p.life<=0||p.x<0||p.y<0||p.x>MW||p.y>MH)S.papers.splice(i,1)}
+  grace-=dt;if(grace>0)return;
+  // 下課時間到
+  if(ph.free&&S.phT>=ph.free){toast('上課鐘響。');return nextPhase()}
+  // 被叫住
+  for(const n of NPCS){if(n.cool>0)continue;if(Math.hypot(n.x-P.x,n.y-P.y)<.72){
+    n.cool=n.type==='parent'?1:12;if(n.type==='student')n.tgt=randTile(n,8);
+    return openCase(drawCard('B'),n.type==='parent'?'走廊上・被家長攔住':'走廊上・被學生叫住',()=>{})}}
+  // 下課時，辦公室和行政處室有事
+  if(ph.free){for(const id of ['off','adm']){const r=roomById(id);if(Math.hypot(P.x-(r.dx+.5),P.y-(r.dy+.5))<1.05&&!(S.doorCool[id]>S.phT)){S.doorCool[id]=S.phT+8;
+      return openCase(drawCard('B'),r.n,()=>{pushOut(r)})}}return}
+  // 走到目的地
+  if(!S.arrived&&atDest())return arrive();
+  if(!S.arrived&&!S.late&&S.phT>=ph.lim&&S.dest!=='exit'){S.late=true;
+    return openCase(LATE,`${fmt(S.t)}・還在路上`,()=>{const d=destPoint();P.x=d.x;P.y=d.y+(S.dest==='fld'?0:(roomById(S.dest)||{out:1}).out*1.3);arrive()})}
+}
+function pushOut(r){P.x=r.dx+.5;P.y=r.dy+.5+r.out*1.35;if(blocked(P.x,P.y,.3)){const p=randTile(P,2);P.x=p.x;P.y=p.y}}
+
+/* ============ 畫面 ============ */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2400)}
+function banner(a,b){const el=$('banner');el.innerHTML=`<b>${esc(a)}</b><span>${esc(b)}</span>`;el.classList.add('on');clearTimeout(bannerT);bannerT=setTimeout(()=>el.classList.remove('on'),1900)}
+function getCount(){try{return +localStorage.getItem('pinan_sent')||0}catch(e){return 0}}
+function addCount(){const n=getCount()+1;try{localStorage.setItem('pinan_sent',String(n))}catch(e){}return n}
+function srcLinks(keys){return keys.map(k=>`<a href="${SRC[k].u}" target="_blank" rel="noopener">${SRC[k].t}</a>`).join('、')}
+
+function renderStart(){
+  stopLoop();AU.bgmStop();AU.pause(false);VO.stop();$('game').hidden=true;$('over').hidden=true;$('startWrap').hidden=false;
+  $('main').innerHTML=`<nav class="start-nav"><span class="brand"><i aria-hidden="true">日</i> 校園日常</span><button id="themeBtn" class="theme-btn" aria-label="切換明暗主題">明暗切換</button></nav><section class="hero"><p class="eyebrow">一場關於老師日常的校園遊戲</p>
+    <h1 class="title">今天也要<br><em>平安</em>下班</h1>
+    <p class="tag">被檢舉一次，就送校事會議。</p>
+    <p class="lede">113 學年，全國有 <b>2,486</b> 件老師被檢舉的案子。<br>遊戲裡的事件，改編自新聞報導過的真實案例，和教學現場的常見情境。</p>
+    <div class="campus-preview"><canvas id="campusPreview" aria-label="校園全景預覽"></canvas><span>07:30 → 17:30<span>目標只有一個：平安走出校門。</span></span></div><div class="how"><div><b><span>01</span> 走進校園</b>方向鍵、WASD，或拖曳畫面移動。</div><div><b><span>02</span> 面對日常</b>到達目的地，選擇你的處理方式。</div><div><b><span>03</span> 平安下班</b>留意家長與飛來的匿名檢舉。</div></div><details class="instructions"><summary>開始前，了解這場遊戲</summary><p>跟著黃色箭頭前往目的地。校園裡白衣的是學生，紫衣的是家長；移動時留意飛來的檢舉單。遇到事件後，選擇一個選項，再按「繼續」。</p><p>事件改編自原作引用的新聞與常見情境。遊戲中的隨機機率是玩法設定，不代表現實發生率。</p><p>切換分頁會自動暫停。手機也可以使用左下角方向鍵；鍵盤用 Esc / P 暫停、1–4 選項、Enter 繼續。</p></details>
+    <button class="primary big-btn" id="go">07:30 進校門</button>
+    <p class="best">約 3–5 分鐘一輪 · 可隨時暫停</p><p class="record" id="recordText"></p><footer class="start-footer">今天，也照顧一下自己。</footer>
+  </section>`;
+  $('go').onclick=()=>{newRun(1);startGame()};
+  $('themeBtn').onclick=()=>{const dark=document.documentElement.dataset.theme==='dark'||(!document.documentElement.dataset.theme&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.dataset.theme=dark?'light':'dark';try{localStorage.setItem('pinan_theme',dark?'light':'dark')}catch{}};
+  const preview=$('campusPreview');preview.width=MW*TS;preview.height=MH*TS;preview.getContext('2d').drawImage(staticCv,0,0,preview.width,preview.height);
+  const record=getRecord();$('recordText').textContent=record.runs?`已開始 ${record.runs} 輪 · 平安下班 ${record.wins} 次 · 最長連續 ${record.bestDay} 天`:'';
+  scrollTo(0,0);
+}
+function startGame(){
+  stopLoop();keys={};joy=null;hintShown=0;$('ctlhint').style.opacity=1;
+  const record=getRecord();record.runs++;saveRecord(record);
+  $('startWrap').hidden=true;$('over').hidden=true;$('game').hidden=false;
+  $('modal').hidden=true;$('shade').hidden=true;$('pauseMsg').hidden=true;$('mobilePad').hidden=false;$('pauseBtn').textContent='暫停';$('pauseBtn').setAttribute('aria-label','暫停遊戲');
+  AU.init();AU.pause(false);AU.duck(false);AU.bgmStart();syncAudioBtns();
+  initWorld();paused=false;userPaused=false;grace=.5;resize();startPhase(0);
+  if(!running){running=true;last=performance.now();frameId=requestAnimationFrame(frame)}
+}
+function hud(){
+  if(!S||S.ph<0)return;const ph=PHASES[S.ph];
+  $('clock').textContent=fmt(S.t);
+  $('who').textContent=`第 ${S.day} 天・${ph.n}`;
+  $('skips').textContent=S.skips.length;
+  $('goal').textContent=ph.free?'下課：自由走動，鐘響前小心別被叫住。':(S.arrived?`${ph.n}中`:`目標：走到 ${destName()}`);
+  $('flow').innerHTML=PHASES.map((p,i)=>`<span class="${i<S.ph?'done':i===S.ph?'now':''}">${p.n}</span>`).join('');
+  const flow=$('flow'),cur=flow.querySelector('.now');if(cur)flow.scrollLeft=Math.max(0,cur.offsetLeft-flow.offsetLeft-(flow.clientWidth-cur.offsetWidth)/2);
+  $('dayProgress').style.width=`${((S.ph+1)/PHASES.length)*100}%`;
+}
+function openCase(c,locName,after){
+  if(!c){after&&after();return}
+  if(c.id!=='late')S.used.add(c.id);focusBeforeCase=document.activeElement;paused=true;joy=null;keys={};$('mobilePad').hidden=true;hud();
+  const m=$('modal');
+  m.innerHTML=`<section class="sheet fade-in">
+    <div class="sheet-head"><span>${fmt(S.t)} · ${esc(locName)}</span>${VO.ok?'<button class="speak" id="speakBtn">朗讀</button>':''}</div>
+    <h2 id="eventTitle" tabindex="-1">${esc(c.ti)}</h2>
+    <p class="narr">${esc(c.tx)}</p>
+    <div class="choices">${c.ch.map((x,i)=>`<button class="card" data-i="${i}"><span class="k">${'ABCD'[i]}</span><span class="t">${esc(x.l)}</span></button>`).join('')}</div>
+    <div id="res"></div></section>`;
+  $('shade').hidden=false;m.hidden=false;m.scrollTop=0;$('eventTitle').focus({preventScroll:true});
+  m.querySelectorAll('.card').forEach(b=>b.onclick=()=>choose(c,c.ch[+b.dataset.i],b,after));
+  AU.duck(true);AU.click();const sb=$('speakBtn');if(sb)sb.onclick=()=>VO.speak(cardSpeech(c));if(VO.auto)VO.speak(cardSpeech(c));
+}
+function choose(c,x,btn,after){
+  if(btn.disabled||btn.closest('.choices').dataset.answered)return;btn.closest('.choices').dataset.answered='true';document.querySelectorAll('#modal .card').forEach(b=>b.disabled=true);btn.classList.add('picked');
+  const reported=x.rep||(x.p!=null&&R()<x.p);
+  if(reported){AU.stamp();VO.stop();$('res').innerHTML=`<div class="result fade-in"><div class="stamp">你被檢舉了</div>${x.z?`<p class="reason">「${esc(x.z)}」</p>`:''}<button class="go" id="next">前往校事會議</button></div>`;
+    $('next').onclick=()=>sendToMeeting(c,`${PHASES[S.ph].n}・${x.l}`,x.z);$('next').focus({preventScroll:true});$('res').scrollIntoView({behavior:'smooth',block:'nearest'});return}
+  let body;
+  if(x.skip){S.skips.push(c.ti);body=`<p class="narr">${esc(x.r)}</p><p class="snark">你保住了自己。這件事，沒有人管了。</p>`}
+  else if(x.p!=null)body=`<p class="narr">這次沒有人檢舉你。</p>`;
+  else body=`<p class="narr">${esc(x.r)}</p>`;
+  $('res').innerHTML=`<div class="result fade-in">${body}<button class="go" id="next">繼續</button></div>`;
+  $('next').onclick=()=>{VO.stop();AU.duck(false);$('modal').hidden=true;$('shade').hidden=true;$('mobilePad').hidden=false;paused=userPaused;grace=.7;hud();after&&after();if($('modal').hidden&&!$('game').hidden){$('cv').focus({preventScroll:true})}};
+  $('next').focus({preventScroll:true});
+  $('res').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function sendToMeeting(c,what,z){
+  if(S.dead)return;stopLoop();S.dead=true;keys={};joy=null;const n=addCount();AU.bgmStop();AU.doom();VO.stop();
+  $('game').hidden=true;$('modal').hidden=true;$('shade').hidden=true;
+  const o=$('over');o.className='over';o.hidden=false;
+  o.innerHTML=`<div class="wrap">
+    <div class="eyebrow" style="color:#ff8a7e">${fmt(S.t)} · ${esc(what)}</div>
+    <h1 class="big">校事會議</h1>
+    <p class="nth">你是第 <b>${(BASE+n).toLocaleString()}</b> 件。</p>
+    <div class="row"><button class="primary" id="again">再來一次</button></div>
+    ${c.kind==='s'?`<div class="realbox">
+      <div class="realtag">常見情境</div>
+      <p>檢舉內容：「${esc(z||'')}」</p>
+      <p class="res">這是教學現場常見的情境，不是特定的新聞事件。校事會議會依證據決議結案、輔導，或移送考核會、教評會。但從受理到決議，可能要好幾個月。</p>
+    </div>`:`<div class="realbox">
+      <div class="realtag">真實事件</div>${VO.ok?'<button class="speak" id="speakReal">朗讀</button>':''}
+      <p>${esc(c.real)}</p>
+      <p class="res">${esc(c.res)}</p>
+      <p class="src">出處：${srcLinks(c.src)}</p>
+    </div>`}
+    <div class="sect">
+      <p class="hurt">不管調查結果如何，老師都已經受傷了。</p>
+      <p class="small">${esc(HURT.txt)}（${srcLinks([HURT.src])}）</p>
+      <p class="small">113 學年全國收到 2,486 件檢舉，1,941 件召開校事會議。（${srcLinks(['mn'])}）</p>
+    </div>
+  </div>`;
+  $('again').onclick=()=>{newRun(1);startGame()};
+  const sr=$('speakReal'),rt=c.kind==='s'?'':`${c.real}${c.res}`;if(sr)sr.onclick=()=>VO.speak(rt);if(VO.auto&&rt)VO.speak(rt);
+  o.scrollTop=0;
+}
+function renderWin(){
+  if(S.dead||S.won)return;stopLoop();S.won=true;keys={};joy=null;const record=getRecord();record.wins++;record.bestDay=Math.max(record.bestDay,S.day);saveRecord(record);AU.bgmStop();AU.fanfare();VO.stop();
+  $('game').hidden=true;$('modal').hidden=true;$('shade').hidden=true;const o=$('over');o.className='over win';o.hidden=false;
+  const k=S.skips.length;
+  o.innerHTML=`<div class="wrap">
+    <div class="eyebrow">第 ${S.day} 天 · ${fmt(S.t)} 打卡</div>
+    <h1 class="big">平安下班</h1>
+    <p class="nth">今天你有 <b>${k}</b> 件事選擇不管。</p>
+    ${k?`<ul class="skiplist">${S.skips.map(s=>`<li>${esc(s)}</li>`).join('')}</ul>`:''}
+    <div class="sect">
+      <p class="hurt">不管，就不會被檢舉。</p>
+      <p class="small">天下雜誌調查：95% 的老師怕被檢舉，79% 先求自保。（${srcLinks(['cw'])}）</p>
+    </div>
+    <div class="row"><button class="primary" id="tomorrow">迎接第 ${S.day+1} 天</button><button class="ghost" id="again">重新開始</button></div>
+  </div>`;
+  $('tomorrow').onclick=()=>{newRun(S.day+1);startGame()};
+  $('again').onclick=()=>renderStart();
+  o.scrollTop=0;
+}
+function setUserPause(v){userPaused=v;keys={};joy=null;AU.pause(v);if(v)VO.stop();if($('modal').hidden)paused=v;$('pauseMsg').hidden=!v;$('pauseBtn').textContent=v?'繼續':'暫停';$('pauseBtn').setAttribute('aria-label',v?'繼續遊戲':'暫停遊戲');if(v)$('resumeBtn').focus({preventScroll:true});else if($('modal').hidden)$('cv').focus({preventScroll:true});else $('eventTitle')?.focus({preventScroll:true});}
+
+/* 繪圖 */
+function resize(){const st=$('stage');if(!st)return;const r=st.getBoundingClientRect();dpr=Math.min(2,window.devicePixelRatio||1);
+  cvW=Math.max(1,r.width);cvH=Math.max(1,r.height);const cv=$('cv');cv.width=Math.round(cvW*dpr);cv.height=Math.round(cvH*dpr);
+  zoom=clamp(Math.min(cvW/(12*TS),cvH/(9*TS)),.75,1.6)}
+function hash(x,y){let h=x*374761393+y*668265263;h=(h^(h>>13))*1274126177;return ((h^(h>>16))>>>0)/4294967295}
+function buildStatic(){
+  const sc=2,c=document.createElement('canvas');c.width=MW*TS*sc;c.height=MH*TS*sc;const g=c.getContext('2d');g.scale(sc,sc);
+  for(let y=0;y<MH;y++)for(let x=0;x<MW;x++){const v=grid[y][x],px=x*TS,py=y*TS;
+    if(v===2||v===4){g.fillStyle=(x%2)?'#79a85a':'#82b163';g.fillRect(px,py,TS,TS)}
+    else{g.fillStyle='#d9d4c6';g.fillRect(px,py,TS,TS);for(let k=0;k<7;k++){const h=hash(x*7+k,y*13+k),h2=hash(y*5+k,x*11+k);g.fillStyle=h>.66?'#b8b1a1':h>.33?'#efe9dc':'#9f9686';g.fillRect(px+h*TS,py+h2*TS,2,2)}
+      g.strokeStyle='rgba(120,110,95,.18)';g.strokeRect(px+.5,py+.5,TS-1,TS-1)}}
+  g.save();g.beginPath();g.ellipse(28.5*TS,17.5*TS,6.6*TS,6.2*TS,0,0,Math.PI*2);g.lineWidth=TS*1.5;g.strokeStyle='#b85c3e';g.stroke();
+  g.lineWidth=1.5;g.strokeStyle='rgba(255,255,255,.8)';[-.4,0,.4].forEach(o=>{g.beginPath();g.ellipse(28.5*TS,17.5*TS,(6.6+o)*TS,(6.2+o)*TS,0,0,Math.PI*2);g.stroke()});
+  g.fillStyle='rgba(255,255,255,.28)';g.font='900 46px "Noto Serif TC",serif';g.textAlign='center';g.textBaseline='middle';g.fillText('操場',28.5*TS,17.5*TS);g.restore();
+  for(let y=0;y<MH;y++)for(let x=0;x<MW;x++){if(grid[y][x]===1&&(x===0||y===0||x===MW-1||y===MH-1)){g.fillStyle='#596a5c';g.fillRect(x*TS,y*TS,TS,TS);g.fillStyle='#6f8272';g.fillRect(x*TS,y*TS,TS,6)}}
+  [18,19].forEach(x=>{g.fillStyle='#c8c3b4';g.fillRect(x*TS,(MH-1)*TS,TS,TS)});
+  g.fillStyle='#3d4a40';g.fillRect(17*TS+20,(MH-1)*TS-6,12,TS+6);g.fillRect(20*TS,(MH-1)*TS-6,12,TS+6);
+  g.fillStyle='#f3f0e5';g.font='700 11px "Noto Sans TC",sans-serif';g.textAlign='center';g.fillText('校門',19*TS,(MH-1)*TS-10);
+  TREES.forEach(([x,y])=>{const cx=x*TS+TS/2,cy=y*TS+TS/2;g.fillStyle='rgba(0,0,0,.22)';g.beginPath();g.ellipse(cx+3,cy+10,13,6,0,0,7);g.fill();
+    g.fillStyle='#3f7a46';g.beginPath();g.arc(cx,cy,14,0,7);g.fill();g.fillStyle='#4f9455';g.beginPath();g.arc(cx-4,cy-4,9,0,7);g.fill()});
+  ROOMS.forEach(r=>{const x=r.x*TS,y=r.y*TS,w=r.w*TS,h=r.h*TS;
+    g.fillStyle='rgba(0,0,0,.25)';g.fillRect(x+4,y+6,w,h);g.fillStyle=r.c;g.fillRect(x,y,w,h);
+    g.strokeStyle='rgba(40,30,20,.55)';g.lineWidth=2;g.strokeRect(x+1,y+1,w-2,h-2);
+    g.strokeStyle='rgba(0,0,0,.08)';g.lineWidth=1;for(let yy=y+8;yy<y+h;yy+=8){g.beginPath();g.moveTo(x+2,yy);g.lineTo(x+w-2,yy);g.stroke()}
+    const wy=r.out>0?y+h-12:y+4;g.fillStyle='#bfe0ef';for(let xx=x+8;xx<x+w-14;xx+=22){if(Math.abs(xx+6-(r.dx*TS+TS/2))<18)continue;g.fillRect(xx,wy,12,8)}
+    const dx=r.dx*TS,dy=r.dy*TS;g.fillStyle='#7a4e2c';g.fillRect(dx+5,dy+(r.out>0?8:0),TS-10,TS-8);g.fillStyle='#e8c35a';g.fillRect(dx+TS-11,dy+16,3,3);
+    g.font='700 13px "Noto Sans TC",sans-serif';const tw=g.measureText(r.n).width,sx=x+w/2,sy=r.h>2?y+h/2:y+h-12,bw=Math.max(tw,28)+14;
+    g.fillStyle='rgba(251,252,248,.92)';g.fillRect(sx-bw/2,sy-11,bw,22);g.strokeStyle='#1d2725';g.lineWidth=1.5;g.strokeRect(sx-bw/2,sy-11,bw,22);
+    g.fillStyle='#1d2725';g.textAlign='center';g.textBaseline='middle';g.fillText(r.n,sx,sy)});
+  staticCv=c;
+}
+function drawPerson(g,x,y,o){
+  const bob=o.moving?Math.sin(o.walk*2.2)*1.6:0;
+  g.fillStyle='rgba(0,0,0,.25)';g.beginPath();g.ellipse(x,y+11,9,4,0,0,7);g.fill();
+  g.fillStyle=o.pants;const lp=o.moving?Math.sin(o.walk*2.2)*3:0;g.fillRect(x-5,y+3+bob,4,8+lp*.3);g.fillRect(x+1,y+3+bob,4,8-lp*.3);
+  g.fillStyle=o.shirt;g.fillRect(x-7,y-6+bob,14,11);
+  if(o.bag){g.fillStyle=o.bag;g.fillRect(x-8,y-5+bob,4,9)}
+  if(o.lanyard){g.strokeStyle='#c3352b';g.lineWidth=1.5;g.beginPath();g.moveTo(x-4,y-6+bob);g.lineTo(x,y+1+bob);g.lineTo(x+4,y-6+bob);g.stroke();g.fillStyle='#fff';g.fillRect(x-2,y+bob,4,4)}
+  g.fillStyle='#f0c9a2';g.beginPath();g.arc(x,y-12+bob,7,0,7);g.fill();
+  g.fillStyle=o.hair;g.beginPath();g.arc(x,y-14+bob,7,Math.PI,0);g.fill();
+  if(o.fy>=0){g.fillStyle='#222';g.fillRect(x-3+o.fx*2,y-12+bob,2,2);g.fillRect(x+2+o.fx*2,y-12+bob,2,2)}
+  if(o.label){g.font='700 10px "Noto Sans TC",sans-serif';g.textAlign='center';const tw=g.measureText(o.label).width+8;g.fillStyle=o.labelBg||'rgba(29,39,37,.85)';g.fillRect(x-tw/2,y-34+bob,tw,14);g.fillStyle='#fff';g.textBaseline='middle';g.fillText(o.label,x,y-27+bob)}
+  if(o.bang){g.fillStyle='#ffd23f';g.strokeStyle='#1d2725';g.lineWidth=1.5;g.beginPath();g.arc(x+11,y-24+bob,7,0,7);g.fill();g.stroke();g.fillStyle='#1d2725';g.font='900 11px sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('!',x+11,y-23.5+bob)}
+}
+
+function draw(){
+  const cv=$('cv');if(!cv)return;const g=cv.getContext('2d');
+  g.setTransform(1,0,0,1,0,0);g.fillStyle='#33402f';g.fillRect(0,0,cv.width,cv.height);
+  if(!staticCv||!S||!P||S.ph<0)return;
+  const vw=cvW/zoom,vh=cvH/zoom,WW=MW*TS,WH=MH*TS;
+  let tx=P.x*TS-vw/2,ty=P.y*TS-vh/2;tx=vw>=WW?(WW-vw)/2:clamp(tx,0,WW-vw);ty=vh>=WH?(WH-vh)/2:clamp(ty,0,WH-vh);
+  camX+=(tx-camX)*.2;camY+=(ty-camY)*.2;if(Math.abs(tx-camX)>200)camX=tx;if(Math.abs(ty-camY)>200)camY=ty;
+  g.setTransform(dpr*zoom,0,0,dpr*zoom,-camX*dpr*zoom,-camY*dpr*zoom);
+  g.drawImage(staticCv,0,0,WW,WH);
+  const now=performance.now()/1000,pulse=.55+.45*Math.sin(now*5);
+  // 目的地
+  if(S.dest&&!S.arrived){
+    g.strokeStyle=`rgba(255,214,90,${pulse})`;g.lineWidth=4;
+    if(S.dest==='fld'){g.setLineDash([10,8]);g.strokeRect(FIELD.x*TS,FIELD.y*TS,FIELD.w*TS,FIELD.h*TS);g.setLineDash([])}
+    else if(S.dest!=='exit'){const r=roomById(S.dest);g.strokeRect(r.dx*TS+2,r.dy*TS+(r.out>0?4:-4),TS-4,TS);
+      g.fillStyle='#ffd23f';g.beginPath();const bx=r.dx*TS+TS/2,by=r.dy*TS+(r.out>0?TS+18:-16)+Math.sin(now*6)*3;g.moveTo(bx,by-(r.out>0?-10:10));g.lineTo(bx-8,by);g.lineTo(bx+8,by);g.closePath();g.fill()}}
+  // 下課時可進入的門
+  if(PHASES[S.ph].free)['off','adm'].forEach(id=>{const r=roomById(id);g.strokeStyle=`rgba(195,53,43,${pulse})`;g.lineWidth=2;g.strokeRect(r.dx*TS+3,r.dy*TS-2,TS-6,TS-4)});
+  if(exitOpen()){g.fillStyle=`rgba(255,214,90,${.45+.35*Math.sin(now*5)})`;g.fillRect(18*TS,(MH-1)*TS,2*TS,TS);
+    g.fillStyle='#1d2725';g.font='900 12px "Noto Sans TC",sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('打卡下班',19*TS,(MH-1)*TS+TS/2)}
+  else{g.strokeStyle='#3d4a40';g.lineWidth=3;for(let i=0;i<8;i++){const xx=18*TS+4+i*8;g.beginPath();g.moveTo(xx,(MH-1)*TS+2);g.lineTo(xx,MH*TS-2);g.stroke()}}
+  const ents=NPCS.map(n=>({n,y:n.y})).concat([{n:null,y:P.y}]).sort((a,b)=>a.y-b.y);
+  ents.forEach(e=>{
+    if(!e.n){drawPerson(g,P.x*TS,P.y*TS,{moving:P.moving,walk:walkT*2,shirt:'#2b4b9b',pants:'#2d2d33',hair:'#2a211c',lanyard:1,fx:P.fx,fy:P.fy,label:'你',labelBg:'#c3352b'});return}
+    const n=e.n;
+    if(n.type==='student')drawPerson(g,n.x*TS,n.y*TS,{moving:1,walk:n.walk||0,shirt:'#f4f4f0',pants:'#24335c',hair:'#1b1b1b',bag:n.bag,fx:n.fx||0,fy:n.fy||1});
+    else drawPerson(g,n.x*TS,n.y*TS,{moving:1,walk:n.walk||0,shirt:'#7b4fa3',pants:'#3b3340',hair:'#3b2a20',fx:n.fx||0,fy:n.fy||1,label:'家長',labelBg:'#7b4fa3',bang:!n.cool&&n.life>0});
+  });
+  (S.papers||[]).forEach(p=>{const x=p.x*TS,y=p.y*TS-8;if(p.wait>0){g.strokeStyle='rgba(255,59,48,.9)';g.lineWidth=3;g.beginPath();g.arc(x,y,14+p.wait*30,0,7);g.stroke();g.strokeStyle='rgba(255,59,48,.35)';g.setLineDash([6,6]);g.beginPath();g.moveTo(x,y);g.lineTo(P.x*TS,P.y*TS-8);g.stroke();g.setLineDash([])}g.save();g.translate(x,y);g.rotate(p.rot);g.fillStyle='#fffdf5';g.strokeStyle='#1d2725';g.lineWidth=1.2;g.fillRect(-9,-11,18,22);g.strokeRect(-9,-11,18,22);
+    g.fillStyle='#c3352b';g.fillRect(-6,-7,12,3);g.fillStyle='#aaa';g.fillRect(-6,-1,12,1.5);g.fillRect(-6,3,9,1.5);g.restore();
+    g.font='700 10px "Noto Sans TC",sans-serif';g.textAlign='center';g.textBaseline='middle';const tw=g.measureText('匿名檢舉').width+8;g.fillStyle='#c3352b';g.fillRect(x-tw/2,y-26,tw,13);g.fillStyle='#fff';g.fillText('匿名檢舉',x,y-19.5)});
+  g.setTransform(dpr,0,0,dpr,0,0);
+  if(S.t>=930){g.fillStyle=`rgba(255,130,50,${Math.min(.22,(S.t-930)/90*.22)})`;g.fillRect(0,0,cvW,cvH)}
+  // 指向目的地
+  if(S.dest&&!S.arrived){const d=destPoint(),gx=(d.x*TS-camX)*zoom,gy=(d.y*TS-camY)*zoom;
+    if(gx<0||gx>cvW||gy<0||gy>cvH){const px=(P.x*TS-camX)*zoom,py=(P.y*TS-camY)*zoom,a=Math.atan2(gy-py,gx-px);
+      const ax=clamp(px+Math.cos(a)*Math.min(cvW,cvH)*.38,26,cvW-26),ay=clamp(py+Math.sin(a)*Math.min(cvW,cvH)*.38,26,cvH-26);
+      g.save();g.translate(ax,ay);g.rotate(a);g.fillStyle='#ffd23f';g.strokeStyle='#1d2725';g.lineWidth=2;g.beginPath();g.moveTo(18,0);g.lineTo(-11,-12);g.lineTo(-5,0);g.lineTo(-11,12);g.closePath();g.fill();g.stroke();g.restore()}}
+  // 小地圖
+  const ms=Math.min(3,Math.max(2,cvW/150)),mw=MW*ms,mh=MH*ms,mx=cvW-mw-8,my=8;
+  g.fillStyle='rgba(20,26,23,.72)';g.fillRect(mx-3,my-3,mw+6,mh+6);
+  g.fillStyle='#6f9a55';g.fillRect(mx+21*ms,my+9*ms,16*ms,18*ms);g.fillRect(mx+ms,my+22*ms,9*ms,5*ms);
+  ROOMS.forEach(r=>{g.fillStyle=(S.dest===r.id&&!S.arrived)?(pulse>.5?'#ffd23f':r.c):r.c;g.fillRect(mx+r.x*ms,my+r.y*ms,r.w*ms,r.h*ms)});
+  if(S.dest==='fld'&&!S.arrived&&pulse>.5){g.strokeStyle='#ffd23f';g.lineWidth=2;g.strokeRect(mx+FIELD.x*ms,my+FIELD.y*ms,FIELD.w*ms,FIELD.h*ms)}
+  if(exitOpen()){g.fillStyle='#ffd23f';g.fillRect(mx+18*ms,my+(MH-1)*ms,2*ms,ms)}
+  (S.papers||[]).forEach(p=>{g.fillStyle='#ff3b30';g.fillRect(mx+p.x*ms-2,my+p.y*ms-2,4,4)});
+  NPCS.forEach(n=>{g.fillStyle=n.type==='parent'?'#c38bff':'#fff';g.fillRect(mx+n.x*ms-1.5,my+n.y*ms-1.5,3,3)});
+  g.fillStyle='#ffd23f';g.beginPath();g.arc(mx+P.x*ms,my+P.y*ms,3,0,7);g.fill();
+  if(joy){g.strokeStyle='rgba(255,255,255,.5)';g.lineWidth=2;g.beginPath();g.arc(joy.ox,joy.oy,42,0,7);g.stroke();
+    const jx=joy.x-joy.ox,jy=joy.y-joy.oy,L=Math.hypot(jx,jy),k=L>42?42/L:1;g.fillStyle='rgba(255,255,255,.65)';g.beginPath();g.arc(joy.ox+jx*k,joy.oy+jy*k,16,0,7);g.fill()}
+}
+
+function frame(ts){if(!running)return;const dt=Math.min(.05,(ts-last)/1000||0);last=ts;if(!paused)update(dt);draw();if(running)frameId=requestAnimationFrame(frame)}
+function bindInput(){
+  const cv=$('cv');
+  cv.tabIndex=0;cv.addEventListener('pointerdown',e=>{if(paused||joy)return;cv.setPointerCapture(e.pointerId);const r=cv.getBoundingClientRect();joy={id:e.pointerId,ox:e.clientX-r.left,oy:e.clientY-r.top,x:e.clientX-r.left,y:e.clientY-r.top}});
+  cv.addEventListener('pointermove',e=>{if(!joy||e.pointerId!==joy.id)return;const r=cv.getBoundingClientRect();joy.x=e.clientX-r.left;joy.y=e.clientY-r.top});
+  const end=e=>{if(joy&&e.pointerId===joy.id)joy=null};cv.addEventListener('pointerup',end);cv.addEventListener('pointercancel',end);
+  const K={ArrowLeft:1,ArrowRight:1,ArrowUp:1,ArrowDown:1,a:1,d:1,w:1,s:1,A:1,D:1,W:1,S:1};
+  addEventListener('keydown',e=>{if($('game').hidden)return;if(K[e.key]){if(!$('modal').hidden)return;keys[e.key.length===1?e.key.toLowerCase():e.key]=true;e.preventDefault()}
+    if((e.key.toLowerCase()==='p'||e.key==='Escape')&&!e.repeat){e.preventDefault();setUserPause(!userPaused)}});
+  addEventListener('keyup',e=>{keys[e.key.length===1?e.key.toLowerCase():e.key]=false});
+  addEventListener('blur',()=>{keys={};joy=null});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden&&!$('game').hidden)setUserPause(true)});
+  $('pauseBtn').onclick=()=>setUserPause(!userPaused);
+  $('resumeBtn').onclick=()=>setUserPause(false);
+  $('homeBtn').onclick=()=>{if(confirm('回到首頁會結束目前這一天，確定離開？')){setUserPause(false);renderStart()}};
+  $('mobilePad').querySelectorAll('button').forEach(button=>{const dir=button.dataset.dir;button.addEventListener('pointerdown',e=>{if(paused)return;e.preventDefault();button.setPointerCapture(e.pointerId);keys[dir]=true;button.classList.add('held')});const end=()=>{keys[dir]=false;button.classList.remove('held')};['pointerup','pointercancel','lostpointercapture'].forEach(type=>button.addEventListener(type,end))});
+  addEventListener('keydown',e=>{if($('game').hidden||e.repeat)return;const root=!$('pauseMsg').hidden?$('pauseMsg'):!$('modal').hidden?$('modal'):null;if(!root)return;
+    if(e.key==='Tab'){const nodes=[...root.querySelectorAll('button:not([disabled]),a[href]')].filter(n=>n.getClientRects().length);if(!nodes.length)return;const first=nodes[0],last=nodes[nodes.length-1];if(e.shiftKey&&(document.activeElement===first||!nodes.includes(document.activeElement))){e.preventDefault();last.focus()}else if(!e.shiftKey&&(document.activeElement===last||!nodes.includes(document.activeElement))){e.preventDefault();first.focus()}}
+    if(root===$('modal')){if(/^[1-4]$/.test(e.key)){const button=root.querySelectorAll('.card')[Number(e.key)-1];if(button&&!button.disabled){e.preventDefault();button.click()}}else if(e.key==='Enter'&&document.activeElement?.tagName!=='BUTTON'){const next=$('next');if(next){e.preventDefault();next.click()}}}
+  });
+  $('sndBtn').onclick=()=>{AU.init();AU.setOn(!AU.on);syncAudioBtns()};
+  $('voBtn').onclick=()=>{VO.setAuto(!VO.auto);syncAudioBtns()};
+  syncAudioBtns();
+  if(window.ResizeObserver)new ResizeObserver(resize).observe($('stage'));else addEventListener('resize',resize);
+}
+function getRecord(){try{const r=JSON.parse(localStorage.getItem('pinan_record')||'{}');return {runs:Math.max(0,Number(r.runs)||0),wins:Math.max(0,Number(r.wins)||0),bestDay:Math.max(0,Number(r.bestDay)||0)}}catch{return {runs:0,wins:0,bestDay:0}}}
+function saveRecord(record){try{localStorage.setItem('pinan_record',JSON.stringify(record))}catch{}}
+try{const theme=localStorage.getItem('pinan_theme');if(theme==='dark'||theme==='light')document.documentElement.dataset.theme=theme}catch{}
+if(typeof document!=='undefined'&&document.getElementById('main')){
+  buildWorld();buildStatic();bindInput();renderStart();
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>buildStatic());
+}
+
+</script>
+
+</body></html>

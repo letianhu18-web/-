@@ -32,7 +32,9 @@ node scripts/serve.mjs
 
 这是静态站点，可将本目录直接部署到 Cloudflare Pages 或其他静态服务，构建命令留空，发布目录使用 `naiwa-tea`（以整个仓库作为根目录时）。
 
-如果仓库已将 `main` 根目录发布为 GitHub Pages，游戏路径为 `https://letianhu18-web.github.io/-/naiwa-tea/`。上传源码并不自动替换原作者的 Cloudflare 域名。
+仓库中的 GitHub Actions 会把 `naiwa-tea` 目录发布到 GitHub Pages 网站根路径。当前在线地址是 <https://letianhu18-web.github.io/-/>。每次更新 `naiwa-tea/` 内容都会自动重新发布。
+
+原作者的 Cloudflare 域名由原网站项目管理；向这个 GitHub 仓库发布不会改动该域名。
 
 ## 验证
 
@@ -46,3 +48,4 @@ node --test tests/*.test.mjs
 ## 来源与权利
 
 代码、模型、图片和角色设计来自上方公开提供的网站，来源获取日期为 2026-10-09。公开网站未提供可核实的完整源码授权说明，因此本目录不为原始内容另行添加开源许可证，不表示原作者转让版权。第三方库的原始版权注释保留，Three.js 的许可证见 `assets/vendor/THREE-LICENSE.txt`。
+

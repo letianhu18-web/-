@@ -1,7 +1,7 @@
 import {RenderClock,renderPolicy,QUALITY_MODES} from './render-policy.mjs';
 import {openSaveVault} from './save-vault.mjs';
 import {SaveUI} from './save-ui.mjs';
-import {SupportUI} from './support-ui.mjs';
+
 import {OperationsUI} from './operations-ui.mjs';
 import {billTotal} from './operating-costs.mjs';
 import {JournalUI} from './journal-ui.mjs';
@@ -39,7 +39,7 @@ craftUI=new CraftUI(game,ui,audio,()=>scene);const practice=new PracticeSession(
 const wardrobeUI=new WardrobeUI(game,ui,audio,()=>scene);
 const journalUI=new JournalUI(game,audio,wardrobeUI);
 const operationsUI=new OperationsUI(game,ui,audio);
-const supportUI=new SupportUI(game,audio);
+
 for(const dialog of document.querySelectorAll('dialog')){const show=dialog.showModal.bind(dialog),close=dialog.close.bind(dialog);dialog.showModal=(...args)=>{craftUI.stop();dialog.dataset.openedAt=String(performance.now());show(...args);updatePause();};dialog.close=(...args)=>{close(...args);updatePause();};dialog.addEventListener('close',updatePause);}
 const saveUI=new SaveUI(save,game,ui,updatePause);
 game.on(e=>{
@@ -67,7 +67,7 @@ game.on(e=>{
     case 'sip':scene?.sip();break;
     case 'review':ui.review(e);growthUI.render();if(game.data.storeLevel>=4&&game.random()<.3)game.later(1.1,()=>scene?.sitCustomer());if(e.rating===5){scene?.celebrate();audio.play('fiveStar');}else{scene?.moodFor('confused',.8);audio.play('badReview');}game.later(.22,()=>audio.play('cookies'));if(e.bonus){audio.play('combo');vibration(18);}if(e.lucky){audio.play('lucky');game.later(1.65,()=>ui.toast('今天运气不错！',1.2));}break;
     case 'leave':scene?.leave();$('remake-confirm').close();$('recipe-hint').close();break;
-    case 'dayEnd':audio.play('dayEnd');growthUI.render();townUI.summary();supportUI.schedule();break;
+    case 'dayEnd':audio.play('dayEnd');growthUI.render();townUI.summary();break;
     case 'notice':ui.toast(e.message,2);break;
     case 'shortMoney':ui.toast(`饼干还差${e.missing}个～`,1.8);ui.animate(document.querySelector('.wallet'),'short');break;
     case 'growth':growthUI.onGrowth(e);journalUI.renderHome();audio.play('upgrade');break;
@@ -139,7 +139,7 @@ if(devMode){
   game.persist();ui.render();
  };
  // Only exposed in the explicitly requested development mode.
- window.__naiwa={game,orders,drinks,customers,audio,ui,growthUI,craftUI,practice,townUI,wardrobeUI,journalUI,supportUI,saveUI,pauseReasons,get scene(){return scene;}};
+ window.__naiwa={game,orders,drinks,customers,audio,ui,growthUI,craftUI,practice,townUI,wardrobeUI,journalUI,saveUI,pauseReasons,get scene(){return scene;}};
 }
 $('continue').addEventListener('click',()=>{clickSound();if(game.nextDay())$('summary').close();});
 $('summary').addEventListener('cancel',e=>e.preventDefault());

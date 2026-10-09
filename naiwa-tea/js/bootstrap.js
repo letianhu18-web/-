@@ -26,6 +26,6 @@
     retry.onclick = () => location.reload();
     loading.append(retry);
   }, 25000);
-  import('./app.mjs?v=0.7.8').catch(error => { console.error('Game startup failed', error); fail(); });
+  import('./app.mjs?v=0.7.9').catch(error => { console.error('Game startup failed', error); fail(); });
 })();
 

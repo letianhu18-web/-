@@ -1,5 +1,5 @@
 import {ResilientSave} from './save-resilience.mjs';
-import {normalizeSupport} from './support.mjs';
+
 import {normalizeCosts,normalizeBill,billTotal} from './operating-costs.mjs';
 import {normalizeJournal} from './journal.mjs';
 import {normalizeTown} from './town.mjs';
@@ -23,7 +23,7 @@ export class SaveSystem extends ResilientSave {
  exportText(data){return JSON.stringify({format:'naiwa-teashop',formatVersion:1,exportedAt:new Date().toISOString(),data},null,2);}
  decodeImport(text){if(typeof text!=='string'||text.length>2*1024*1024)throw Error('存档文件过大');let file;try{file=JSON.parse(text);}catch{throw Error('文件不是完整的 JSON 存档');}if(file?.format&&file.format!=='naiwa-teashop')throw Error('这不是奶蛙奶茶铺的存档');if(file?.formatVersion&&file.formatVersion!==1)throw Error('不支持这个备份格式');const raw=this.check(file?.format==='naiwa-teashop'?file.data:file);return this.validate(raw);}
  validate(raw){
-  this.check(raw);const s={...raw,...freshSave()},old=raw.version===1;delete s.authorFeedbackDay;delete s.authorFeedbackDate;delete s.settings.authorFeedbackDisabled;
+  this.check(raw);const s={...raw,...freshSave()},old=raw.version===1;delete s.support;delete s.authorFeedbackDay;delete s.authorFeedbackDate;delete s.settings.authorFeedbackDisabled;
   s.presentationVersion=5;
   s.day=Math.max(1,num(raw.day,1,99999));for(const k of ['cookies','highestCombo','totalCustomers','streak'])s[k]=num(raw[k]);
   s.tutorialComplete=raw.tutorialComplete===true;s.settings.sound=raw.settings?.sound!==false;s.settings.vibration=raw.settings?.vibration!==false;
@@ -32,7 +32,7 @@ export class SaveSystem extends ResilientSave {
   for(const k of ['days','cups','fiveStars','income'])s.stats[k]=num(raw.stats?.[k],old?(k==='days'?s.day-1:k==='cups'?s.totalCustomers:0):0);
   for(const k of Object.keys(drinkRecipes))s.stats.recipes[k]=num(raw.stats?.recipes?.[k]);
   s.stats.favoriteRecipe=Object.keys(s.stats.recipes).filter(k=>s.stats.recipes[k]>0).sort((a,b)=>s.stats.recipes[b]-s.stats.recipes[a])[0]||null;
-  normalizeGrowth(raw,s);s.wardrobe=normalizeWardrobe(raw.wardrobe);s.journal=normalizeJournal(raw.journal,s.day);s.operatingCosts=normalizeCosts(raw.operatingCosts);s.support=normalizeSupport(raw.support,s);
+  normalizeGrowth(raw,s);s.wardrobe=normalizeWardrobe(raw.wardrobe);s.journal=normalizeJournal(raw.journal,s.day);s.operatingCosts=normalizeCosts(raw.operatingCosts);
   s.recoveredFurniture=Array.isArray(raw.recoveredFurniture)?raw.recoveredFurniture:[];const placedIds=new Set(s.placedFurniture.map(p=>p.uid));for(const p of Array.isArray(raw.placedFurniture)?raw.placedFurniture:[]){if(p.uid&&!placedIds.has(p.uid)&&!s.recoveredFurniture.some(q=>q.uid===p.uid)){s.recoveredFurniture.push({...p,recoveryReason:'旧位置不可用，家具归属已保留'});this.recoveryNotice='有旧位置暂时不能摆放，家具已保留在仓库，请重新选位置。';}}
 
   const t=raw.tutorialState;s.tutorialState={version:4,iceGuideDone:t?.iceGuideDone===true,guidedCupCount:num(t?.guidedCupCount),referenceHintEnabled:t?.referenceHintEnabled===true,seenIceOrders:Array.isArray(t?.seenIceOrders)?t.seenIceOrders.filter(x=>[0,1,2].includes(x)):[],legacy:raw.version<4||t?.legacy===true};

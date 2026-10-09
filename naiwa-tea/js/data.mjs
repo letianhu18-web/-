@@ -1,4 +1,4 @@
-import {freshSupport} from './support.mjs';
+
 import {freshCosts} from './operating-costs.mjs';
 import {freshTown,storyCustomers} from './town-data.mjs';
 import {freshCraft} from './craft-data.mjs';
@@ -28,5 +28,5 @@ export const newDrink=()=>({costBill:{},tea:0,milk:0,strawberryJam:0,sugar:null,
 export const actualIngredients=d=>Object.keys(ingredients).filter(k=>ingredients[k].category==='base'?Boolean(d[k]):ingredients[k].category==='topping'&&d.toppings.includes(k));
 export const nextIngredient=d=>!d.tea?'tea':!d.milk?'milk':!d.toppings.includes('pearl')?'pearl':!d.sealed?'seal':null;
 export const recipeText=id=>drinkRecipes[id].ingredients.map(k=>ingredients[k].name).join(' + ');
-export const freshSave=()=>({...freshGrowth(),...freshCraft(),support:freshSupport(),operatingCosts:freshCosts(),wardrobe:freshWardrobe(),journal:{wish:null,day:0,counts:{},orderIds:[]},presentationVersion:5,recipeRevision:2,...freshTown(),version:4,day:1,cookies:0,highestCombo:0,totalCustomers:0,tutorialComplete:false,streak:0,unlocked:['originalMilkTea','pearlMilkTea'],seenUnlocks:['originalMilkTea','pearlMilkTea'],recentOrders:[],stats:{days:0,cups:0,fiveStars:0,income:0,recipes:{},favoriteRecipe:null},settings:{sound:true,vibration:true},active:null});
+export const freshSave=()=>({...freshGrowth(),...freshCraft(),operatingCosts:freshCosts(),wardrobe:freshWardrobe(),journal:{wish:null,day:0,counts:{},orderIds:[]},presentationVersion:5,recipeRevision:2,...freshTown(),version:4,day:1,cookies:0,highestCombo:0,totalCustomers:0,tutorialComplete:false,streak:0,unlocked:['originalMilkTea','pearlMilkTea'],seenUnlocks:['originalMilkTea','pearlMilkTea'],recentOrders:[],stats:{days:0,cups:0,fiveStars:0,income:0,recipes:{},favoriteRecipe:null},settings:{sound:true,vibration:true},active:null});
 

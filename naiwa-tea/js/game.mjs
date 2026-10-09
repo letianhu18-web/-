@@ -1,4 +1,4 @@
-import {SupportSystem} from './support.mjs';
+
 import {OperatingCosts} from './operating-costs.mjs';
 import {JournalSystem} from './journal.mjs';
 import {TownSystem} from './town.mjs';
@@ -10,7 +10,7 @@ import {storeLevels,businessGoal,furnitureEffects,equipmentDuration} from './gro
 import { drinkRecipes, customers, ingredients, dayGoal, newDrink, nextIngredient, SHAKE, actualIngredients, sugars, ices } from './data.mjs';
 
 export class GameState {
-  constructor(save,random=Math.random) { this.random=random;this.dev={};this.save=save; this.data=save.load(); this.phase='idle'; this.busy=false; this.paused=false; this.clock=0; this.queue=[]; this.events=new Set(); this.lastDirection=0; this.lastShakeAt=-1; this.saveClock=0;this.growth=new GrowthSystem(this);this.wardrobe=new WardrobeSystem(this);this.craft=new HandcraftSystem(this);this.town=new TownSystem(this);this.journal=new JournalSystem(this);this.costs=new OperatingCosts(this);this.support=new SupportSystem(this); }
+  constructor(save,random=Math.random) { this.random=random;this.dev={};this.save=save; this.data=save.load(); this.phase='idle'; this.busy=false; this.paused=false; this.clock=0; this.queue=[]; this.events=new Set(); this.lastDirection=0; this.lastShakeAt=-1; this.saveClock=0;this.growth=new GrowthSystem(this);this.wardrobe=new WardrobeSystem(this);this.craft=new HandcraftSystem(this);this.town=new TownSystem(this);this.journal=new JournalSystem(this);this.costs=new OperatingCosts(this); }
   on(fn) { this.events.add(fn); return ()=>this.events.delete(fn); }
   emit(type,detail={}) { for(const fn of this.events) fn({type,...detail}); }
   get day() { return this.data.active; }
@@ -30,7 +30,7 @@ export class GameState {
   }
   start() {
     if(this.phase!=='idle'||this.paused||this.growth.decorating) return false;
-    this.support.clear();const plan=this.growth.prepareDay();
+    const plan=this.growth.prepareDay();
     this.unlock(); const pending=this.data.unlocked.filter(k=>!this.data.seenUnlocks.includes(k)); if(pending.length){this.emit('unlock',{recipes:pending});return false;}
     this.data.active={day:this.data.day,goal:Math.min(14,businessGoal(this.data)+plan.extra),waiting:[],spawned:0,queueClock:0,rushPlanned:plan.rush,rushRemaining:0,rushTriggered:false,materialCost:0,wasteCost:0,salesIncome:0,goalReward:0,milestoneReward:0,served:0,perfect:0,combo:this.data.streak,maxCombo:0,income:0,tips:0,ratingSum:0,bonuses:0,unlocks:this.newUnlocks||[],status:'open',current:null};this.newUnlocks=[];
     this.queue=[]; this.persist(); this.setPhase('dayIntro'); this.later(.9,()=>this.customerSystem.arrive()); return true;
@@ -39,9 +39,9 @@ export class GameState {
   acknowledgeUnlock(keys){this.newUnlocks=[...new Set([...(this.newUnlocks||[]),...keys.filter(k=>!this.data.seenUnlocks.includes(k))])];this.data.seenUnlocks=[...new Set([...this.data.seenUnlocks,...keys])];this.persist();}
   nextDay() {
     if(this.phase!=='summary') return false;
-    this.support.clear();this.queue=[]; this.data.day++; this.data.active=null;this.data.dailyGoal=null; this.busy=false; this.persist(); this.setPhase('idle'); return true;
+    this.queue=[]; this.data.day++; this.data.active=null;this.data.dailyGoal=null; this.busy=false; this.persist(); this.setPhase('idle'); return true;
   }
-  reset() { this.support.clear();this.queue=[]; this.data=this.save.reset(); this.busy=false; this.paused=false; this.lastDirection=0;this.growth.locks.clear();this.growth.decorating=false; this.setPhase('idle'); }
+  reset() { this.queue=[]; this.data=this.save.reset(); this.busy=false; this.paused=false; this.lastDirection=0;this.growth.locks.clear();this.growth.decorating=false; this.setPhase('idle'); }
   tick(dt) {
     if(this.paused){this.craft.stop();return;}
     const inputElapsed=Math.max(0,dt);dt=Math.max(0,Math.min(dt,.1)); this.clock+=dt;this.craft.tick(inputElapsed);if(!this.craft.teaching){this.town.tick(dt);this.customerSystem?.tickQueue(dt);}
@@ -96,7 +96,7 @@ export class CustomerSystem {
   finishDay() {
     const g=this.g;
     if(!g.day||g.day.status==='summary') return false;
-    g.town.finishDay();g.data.stats.days++;g.day.status='summary';g.support.recordDay();g.day.current=null;g.day.waiting=[];g.queue=[];g.emit('queueChanged');g.persist();g.setPhase('summary');g.emit('dayEnd');return true;
+    g.town.finishDay();g.data.stats.days++;g.day.status='summary';g.day.current=null;g.day.waiting=[];g.queue=[];g.emit('queueChanged');g.persist();g.setPhase('summary');g.emit('dayEnd');return true;
   }
   leave() {
     const g=this.g; g.setPhase('leaving');g.emit('leave');
@@ -193,3 +193,4 @@ export class DrinkSystem {
     }return false;
   }
 }
+

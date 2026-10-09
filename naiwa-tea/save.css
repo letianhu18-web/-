@@ -1,0 +1,2 @@
+#save-alert{position:fixed;z-index:500;left:50%;top:max(8px,env(safe-area-inset-top));transform:translateX(-50%);width:min(calc(100% - 24px),420px);padding:12px 14px;border:1px solid #dbc58f;border-radius:18px;background:#fff8dd;color:#6d562e;box-shadow:0 6px 25px #173c392b;font-size:12px;line-height:1.6}
+#save-alert p{margin:0 0 7px}#save-alert>div{display:flex;gap:8px}#save-alert button{flex:1;min-height:44px;border-radius:14px;font-size:12px;font-weight:700;background:#e9dab7;color:#5b4e30}#save-alert-export{background:#f1edda!important}#save-note{overflow-wrap:anywhere}

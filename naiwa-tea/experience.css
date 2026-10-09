@@ -1,0 +1,36 @@
+/* Small presentation improvements layered on the original game layouts. */
+html { color-scheme: light; }
+body { background: radial-gradient(ellipse at 15% 10%, #629482 0, transparent 48%), radial-gradient(ellipse at 85% 85%, #284f46 0, transparent 50%), #234f46; }
+button, a, select { -webkit-tap-highlight-color: transparent; }
+select:focus-visible, a:focus-visible { outline: 3px solid #dfab45; outline-offset: 3px; }
+.setting-row select { min-height: 44px; max-width: 48%; border: 1px solid #d4decc; border-radius: 12px; padding: 6px 10px; background: #edf2e7; color: #254c43; font: inherit; font-size: 13px; }
+#quality-note { font-size: 11px; line-height: 1.6; margin: -2px 0 14px; text-align: left; }
+#loading { gap: 9px; }
+#loading .secondary { width: auto; max-width: 90%; padding: 10px 20px; }
+#home-caption { position: relative; }
+#home-caption::after { content: 'NAIWA TEA'; position: absolute; right: 20px; top: 17px; font-size: 9px; letter-spacing: .13em; color: #68856e; }
+#game[data-mode="home"] #main-action { background: linear-gradient(135deg, #23876c, #146d5b); box-shadow: 0 3px 0 #125b4c, 0 8px 20px #19776218; }
+#game[data-mode="home"] #home-nav button:hover { background: #eaf0e2; }
+#game[data-mode="home"] #home-nav button:focus-visible { outline-offset: -3px; }
+#scene-caption { max-width: calc(100% - 24px); }
+#clothes-preview, .clothes-card img { object-fit: contain; }
+@media (min-width: 600px) {
+  body { padding: 18px; }
+  #game, #game[data-mode="home"] { height: min(940px, calc(100dvh - 36px)); border: 1px solid #ffffff38; border-radius: 30px; box-shadow: 0 24px 80px #0b292b40, 0 0 0 8px #ffffff09; }
+}
+@media (max-width: 359px) {
+  #home-caption::after { display: none; }
+  #game[data-mode="home"]>.topbar { padding-inline: 12px; gap: 6px; }
+  #game[data-mode="home"] #next-target { gap: 8px; }
+  #game[data-mode="home"] #journal-home b { font-size: 11px; }
+  #game[data-mode="home"] #journal-home small { font-size: 10px; }
+}
+@media (max-height: 560px) {
+  body { display: block; padding: 0; }
+  #game[data-mode="home"] { height: auto; min-height: 510px; max-height: none; margin: auto; grid-template-rows: 48px 68px minmax(150px, 1fr) auto auto; }
+  #game[data-mode="business"], #game[data-mode="decor"] { min-height: 500px; height: 500px; max-height: none; margin: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  dialog[open], .toast, .loading-dot { animation: none; }
+  #game[data-mode="home"] #home-nav button { transition: none; }
+}

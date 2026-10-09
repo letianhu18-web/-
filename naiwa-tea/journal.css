@@ -1,0 +1,32 @@
+#journal-home{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:44px;margin-top:6px;padding:8px 11px;border-radius:15px;background:#e8eddb;text-align:left}
+#journal-home b{font-size:12px;max-width:46%}#journal-home small{font-size:11px;color:#587562;text-align:right;line-height:1.4}
+#journal-page{width:min(calc(100% - 20px),450px);max-height:94dvh;padding:20px 15px;overflow:auto;overscroll-behavior:contain}
+#journal-page .back{position:relative;float:none;margin:0 0 -35px;top:0;left:0;background:transparent}
+#journal-page h2{margin:8px 0;font-size:23px}#journal-page .journal-kicker{font-size:11px;color:#778570;letter-spacing:.12em}
+#journal-total{display:block;margin:8px 0;color:#997236;font-size:14px}#journal-page .journal-intro{font-size:12px;line-height:1.6;margin:8px 0 14px}
+.journal-wish{background:#edf1e0;border:1px solid #dde6ce;border-radius:20px;padding:13px;text-align:left;margin:12px 0 18px}
+.journal-wish h3{font-size:17px;margin:5px 0}.journal-wish p{font-size:12px;line-height:1.6;margin:6px 0}.journal-wish small{font-size:11px;color:#67816a}
+.journal-wish-head{display:flex;align-items:center;gap:12px}.journal-wish-head img{width:85px;height:95px;object-fit:contain;border-radius:14px;background:#f6efdd}.journal-wish-head>div{min-width:0}
+#journal-shop{margin-top:10px;min-height:44px;font-size:13px;background:#dce7ce}#journal-clear-wish{display:block;margin:4px auto 0;background:transparent;font-size:12px;color:#78806c;min-height:44px}
+#journal-recipes{display:grid;grid-template-columns:1fr 1fr;gap:10px}.journal-recipe{min-width:0;background:#f0eadb;border-radius:18px;padding:12px 9px;text-align:center}
+.journal-recipe .mini-cup{margin:auto;width:59px;height:74px}.journal-recipe h3{font-size:14px;margin:6px 0}.journal-recipe>small{font-size:11px;color:#7c816c}.journal-recipe>b{display:block;font-size:12px;color:#766033;margin-top:10px}
+.journal-recipe p{font-size:11px!important;line-height:1.5!important;margin:6px 0!important;min-height:32px}.journal-stamps{display:flex;justify-content:center;gap:6px;margin-top:12px}.journal-stamps>span{display:flex;align-items:center;justify-content:center;position:relative;width:25px;height:25px;border:1px dashed #bdc2a9;border-radius:50%;font-size:12px;color:#a4aa93}
+.journal-stamps>span.earned{background:#267c62;border:1px solid #267c62;color:#fff7d8}.journal-stamps small{position:absolute;top:25px;font-size:8px;color:#8e947e}.journal-recipe>b{margin-top:17px}
+#journal-page progress{display:block;appearance:none;width:100%;height:6px;border:0;border-radius:6px;margin:10px 0;background:#d8dfcd;overflow:hidden}#journal-page progress::-webkit-progress-bar{background:#d8dfcd}#journal-page progress::-webkit-progress-value{background:#4b9373;border-radius:6px}#journal-page progress::-moz-progress-bar{background:#4b9373}
+.journal-unknown{display:grid;place-items:center;width:59px;height:74px;margin:auto;color:#aeb39b;font-size:34px}.journal-locked{background:#f0f1e6}.journal-rules{font-size:11px!important;color:#7d8977;margin:15px 3px!important}
+#summary-journal{background:#edf1e1;border-radius:16px;padding:12px;text-align:left;margin:10px 0}#summary-journal>small{display:block;font-size:11px;color:#768568}#summary-journal p{font-size:12px;line-height:1.6;margin:5px 0}#summary-journal b{font-size:13px;display:block;margin-top:5px}
+#summary-journal-open{font-size:12px;min-height:44px;margin-bottom:12px}.goal-options{display:grid;gap:7px;margin:10px 0}.goal-options button{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 8px;text-align:left;padding:10px 12px;border-radius:15px;background:#edf1e5;border:2px solid transparent;min-height:60px}
+.goal-options button[aria-pressed=true]{border-color:#3b8c69;background:#e0edd9}.goal-options b{font-size:13px}.goal-options small{grid-column:1;font-size:11px;color:#687b60}.goal-options em{grid-column:2;grid-row:1/3;align-self:center;font-size:12px;font-style:normal;color:#967037}
+#preparation .goal-card{margin:10px 0 15px;padding:12px}#preparation .goal-card>p{margin:4px 0;font-size:13px}#preparation .goal-card>small{font-size:11px}#preparation .goal-card>span{font-size:12px}
+#clothes-wish{min-height:44px;border-radius:13px;background:#e4ead7;color:#42684e;font-size:12px;padding:8px;margin-top:7px;width:100%;font-weight:700}
+@media(max-width:360px){#journal-recipes{gap:7px}.journal-stamps{gap:4px}.journal-stamps>span{width:23px;height:23px}.journal-stamps small{top:23px}#journal-home{padding:7px 9px}}
+@media(prefers-reduced-motion:reduce){#journal-page[open]{animation:none}}
+
+#journal-page .back{display:block}
+#preparation{max-height:94dvh;padding:16px 15px;overflow:auto}
+#preparation .back{position:relative;display:block;float:none;top:0;left:0;margin:0 0 -35px;background:transparent}
+#preparation h2{font-size:20px;margin:6px 0 8px}#prep-flow{margin:5px 0 10px;font-size:13px}#prep-note{font-size:12px}
+#preparation .goal-options button{min-height:56px;padding:8px 10px}#preparation .goal-options{gap:6px;margin:8px 0}
+#summary{max-height:94dvh;padding:20px 18px}#summary>dl{grid-template-columns:1fr 1fr;gap:9px 13px;margin:13px 0;font-size:12px}#summary>dl dd{font-size:15px}#summary .summary-star{font-size:31px;margin:3px 0}#summary-message{font-size:12px;margin:5px 0}#summary .sum-income{padding:10px 0 12px}#summary h2{font-size:19px}
+#summary-journal-open{display:block;width:100%;margin:12px 0;padding:12px;border-radius:17px;background:#e6efdb;text-align:left}
+#summary-journal{display:block;background:transparent;padding:0;margin:0}#summary-journal .journal-note{display:block;font-size:12px;line-height:1.6;margin:5px 0}.journal-summary-link{display:block;text-align:right;font-size:11px;color:#31785d;margin-top:7px}

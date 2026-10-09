@@ -1,0 +1,12 @@
+{
+  "name": "naiwa-tea",
+  "private": true,
+  "version": "0.7.6",
+  "type": "module",
+  "description": "Optimized static mirror of 奶蛙奶茶铺",
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "check": "node scripts/check.mjs"
+  }
+}

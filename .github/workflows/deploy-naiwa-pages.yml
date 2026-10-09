@@ -1,4 +1,4 @@
-name: Publish Naiwa Tea to GitHub Pages
+name: Publish websites to GitHub Pages
 
 on:
   push:
@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "naiwa-tea/**"
+      - "safe-after-school/**"
       - ".github/workflows/deploy-naiwa-pages.yml"
   workflow_dispatch:
 
@@ -29,10 +30,16 @@ jobs:
         uses: actions/checkout@v4
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
+      - name: Prepare both websites
+        run: |
+          mkdir -p _site/safe-after-school
+          cp -a naiwa-tea/. _site/
+          cp safe-after-school/index.html _site/safe-after-school/index.html
+          touch _site/.nojekyll
       - name: Package static site
         uses: actions/upload-pages-artifact@v3
         with:
-          path: naiwa-tea
+          path: _site
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4

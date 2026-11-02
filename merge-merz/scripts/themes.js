@@ -31,17 +31,18 @@ window.MERZ_LEVELS = [
   },
   {
     "level": 3,
-    "name": "见习默茨",
-    "de": "Frühschicht",
-    "kind": "经典梗素材",
-    "author": "_FriedrichMerz",
-    "post": "https://x.com/_FriedrichMerz/status/1644952920981487616",
-    "media": "https://pbs.twimg.com/media/FtQLz2EWAAAXct6.jpg",
-    "image": "assets/memes/level-03.webp",
+    "name": "鸡蛋脸默茨",
+    "de": "Ei-Merz",
+    "kind": "默茨鸡蛋梗图 · 网站截图",
+    "author": "watson",
+    "sourceLabel": "来源 ↗ watson",
+    "post": "https://www.watson.ch/international/deutschland/150187867-schluepfrige-domain-fuehrt-zu-friedrich-merz-webseite",
+    "media": "https://www.watson.ch/imgdb/88ea/Qx%2CB%2C0%2C0%2C977%2C2000%2C407%2C833%2C162%2C333/3685126384057515",
+    "image": "assets/memes/level-03-egg-face.webp",
     "crop": {
-      "zoom": 2.1,
-      "cx": 0.72,
-      "cy": 0.43
+      "zoom": 0.92,
+      "cx": 0.5,
+      "cy": 0.42
     }
   },
   {

@@ -51,7 +51,7 @@
     source.href = level.post;
     source.target = "_blank";
     source.rel = "noopener noreferrer";
-    source.textContent = "X ↗ @" + level.author;
+    source.textContent = level.sourceLabel || "X ↗ @" + level.author;
     card.append(button, title, subtitle, source);
     grid.append(card);
   }

@@ -1,0 +1,123 @@
+window.MERZ_LEVELS = [
+  {
+    "level": 1,
+    "name": "青春默茨",
+    "de": "Analog-Merz",
+    "kind": "视频梗素材",
+    "author": "_FriedrichMerz",
+    "post": "https://x.com/_FriedrichMerz/status/1440742692330164227",
+    "media": "https://pbs.twimg.com/media/E_6Kus0VIAUlYnF.jpg",
+    "image": "assets/memes/level-01.webp",
+    "crop": {
+      "zoom": 1.8,
+      "cx": 0.54,
+      "cy": 0.45
+    }
+  },
+  {
+    "level": 2,
+    "name": "咖喱默茨",
+    "de": "Currywurst",
+    "kind": "经典梗素材",
+    "author": "_FriedrichMerz",
+    "post": "https://x.com/_FriedrichMerz/status/1603368811213856768",
+    "media": "https://pbs.twimg.com/media/FkBPbwOX0AEPUZB.jpg",
+    "image": "assets/memes/level-02.webp",
+    "crop": {
+      "zoom": 1.1,
+      "cx": 0.5,
+      "cy": 0.49
+    }
+  },
+  {
+    "level": 3,
+    "name": "见习默茨",
+    "de": "Frühschicht",
+    "kind": "经典梗素材",
+    "author": "_FriedrichMerz",
+    "post": "https://x.com/_FriedrichMerz/status/1644952920981487616",
+    "media": "https://pbs.twimg.com/media/FtQLz2EWAAAXct6.jpg",
+    "image": "assets/memes/level-03.webp",
+    "crop": {
+      "zoom": 2.1,
+      "cx": 0.72,
+      "cy": 0.43
+    }
+  },
+  {
+    "level": 4,
+    "name": "夜班默茨",
+    "de": "Nachtschicht",
+    "kind": "经典梗素材",
+    "author": "_FriedrichMerz",
+    "post": "https://x.com/_FriedrichMerz/status/1644952920981487616",
+    "media": "https://pbs.twimg.com/media/FtQLz2AWcAAOJVI.jpg",
+    "image": "assets/memes/level-04.webp",
+    "crop": {
+      "zoom": 1.5,
+      "cx": 0.38,
+      "cy": 0.35
+    }
+  },
+  {
+    "level": 5,
+    "name": "番茄酱默茨",
+    "de": "Ketchup-Merz",
+    "kind": "X 梗图的媒体拼图",
+    "author": "RalfHeinrich58",
+    "post": "https://x.com/RalfHeinrich58/status/1603671439990824962",
+    "media": "https://www.buzzfeed.de/assets/images/30/514/30514513-friedrich-merz-currywurst-twitter-reaktionen-tweets-liste-Xe9.jpg",
+    "image": "assets/memes/level-05.webp",
+    "crop": {
+      "zoom": 1.5,
+      "cx": 0.73,
+      "cy": 0.47
+    }
+  },
+  {
+    "level": 6,
+    "name": "省房租默茨",
+    "de": "Doppel-Schicht",
+    "kind": "X 梗图",
+    "author": "eM_aka_zero",
+    "post": "https://x.com/eM_aka_zero/status/1644987554310270978",
+    "media": "https://pbs.twimg.com/media/FtQrdoMWwAM-Rnw.jpg",
+    "image": "assets/memes/level-06.webp",
+    "crop": {
+      "zoom": 1.0,
+      "cx": 0.47,
+      "cy": 0.39
+    }
+  },
+  {
+    "level": 7,
+    "name": "重数默茨",
+    "de": "Nochmal zählen",
+    "kind": "X 梗图",
+    "author": "meme_ec",
+    "post": "https://x.com/meme_ec/status/1919666911341678830",
+    "media": "https://pbs.twimg.com/media/GqQGu4LXIAEQdJB.png",
+    "image": "assets/memes/level-07.webp",
+    "crop": {
+      "zoom": 1.0,
+      "cx": 0.5,
+      "cy": 0.5
+    }
+  },
+  {
+    "level": 8,
+    "name": "起飞默茨",
+    "de": "CDU Air",
+    "kind": "X 梗图素材",
+    "author": "schote_erzaehl",
+    "post": "https://x.com/schote_erzaehl/status/1545671359614926849",
+    "media": "https://pbs.twimg.com/media/FXNT6BuWQAA7m-S.jpg",
+    "image": "assets/memes/level-08.webp",
+    "crop": {
+      "zoom": 0.85,
+      "cx": 0.5,
+      "cy": 0.5
+    }
+  }
+];
+window.BUILT_IN_THEMES = [{id:"merz",name:"默茨宇宙",sources:window.MERZ_LEVELS.map(level=>level.image),crops:window.MERZ_LEVELS.map(level=>level.crop)}];

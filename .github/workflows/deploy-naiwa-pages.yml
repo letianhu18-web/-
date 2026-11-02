@@ -8,6 +8,7 @@ on:
       - "naiwa-tea/**"
       - "safe-after-school/**"
       - "suika-the-politician/**"
+      - "merge-merz/**"
       - ".github/workflows/deploy-naiwa-pages.yml"
   workflow_dispatch:
 
@@ -39,6 +40,9 @@ jobs:
           cp suika-the-politician/index.html _site/suika-the-politician/
           cp suika-the-politician/preview.webp _site/suika-the-politician/
           cp -a suika-the-politician/assets suika-the-politician/scripts suika-the-politician/styles _site/suika-the-politician/
+          mkdir -p _site/merge-merz
+          cp merge-merz/index.html merge-merz/preview.webp _site/merge-merz/
+          cp -a merge-merz/assets merge-merz/scripts merge-merz/styles _site/merge-merz/
           touch _site/.nojekyll
       - name: Package static site
         uses: actions/upload-pages-artifact@v3

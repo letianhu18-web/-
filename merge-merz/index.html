@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <title data-i18n="合成大默茨">Merge Merz</title>
+    <meta
+      name="description"
+      content="合成大默茨：用 X 上的 Friedrich Merz 梗图与经典素材，从咖喱香肠一路合成到起飞默茨。"
+    />
+    <link
+      rel="canonical"
+      href="https://letianhu18-web.github.io/-/merge-merz/"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Merge Merz" />
+    <meta property="og:title" content="Merge Merz" />
+    <meta
+      property="og:description"
+      content="MERZVERSE — merge eight Merz meme levels, from currywurst to take-off."
+    />
+    <meta
+      property="og:url"
+      content="https://letianhu18-web.github.io/-/merge-merz/"
+    />
+    <meta
+      property="og:image"
+      content="https://letianhu18-web.github.io/-/merge-merz/preview.webp"
+    />
+    <meta property="og:image:type" content="image/webp" />
+    <meta property="og:image:width" content="899" />
+    <meta property="og:image:height" content="899" />
+    <meta
+      property="og:image:alt"
+      content="Merge Merz cover photo."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Merge Merz" />
+    <meta
+      name="twitter:description"
+      content="MERZVERSE — merge eight Merz meme levels, from currywurst to take-off."
+    />
+    <meta
+      name="twitter:image"
+      content="https://letianhu18-web.github.io/-/merge-merz/preview.webp"
+    />
+    <meta
+      name="twitter:image:alt"
+      content="Merge Merz cover photo."
+    />
+    <link rel="stylesheet" href="styles/game.css" />
+    <meta name="theme-color" content="#101824" />
+    <script src="scripts/i18n.js"></script>
+  </head>
+  <body>
+    <section
+      id="theme-screen"
+      class="theme-screen"
+      aria-labelledby="theme-heading"
+    >
+      <div class="theme-panel">
+        <label class="language-control" for="language"
+          ><span data-i18n="语言">语言</span
+          ><select id="language" class="language-select">
+            <option value="zh">中文</option>
+            <option value="fr">Français</option>
+            <option value="en">English</option>
+          </select></label
+        >
+        <div id="theme-selection">
+          <p class="eyebrow" data-i18n="合成大默茨">合成大默茨</p>
+          <h1 id="theme-heading" data-i18n="MERZVERSE">
+            MERZVERSE
+          </h1>
+          <p class="intro" data-i18n="从咖喱香肠到超级默茨，两个相同梗图合成下一级。">从咖喱香肠到超级默茨，两个相同梗图合成下一级。</p>
+          <p class="edition">MERZVERSE · HEINZ EDITION</p>
+          <div class="merz-hero" aria-hidden="true"><img src="assets/memes/level-01.webp" alt=""><img src="assets/memes/level-04.webp" alt=""><img src="assets/memes/level-08.webp" alt=""></div>
+          <div id="theme-options" class="theme-options"></div>
+          <p class="satire-note">Satire-Spiel · 娱乐梗图游戏</p><div class="merz-menu-actions"><button type="button" class="secondary-button" id="open-gallery">梗图图鉴 · Meme-Galerie</button><a class="secondary-button" href="../suika-the-politician/">原版游戏</a></div>
+          <button
+            type="button"
+            id="customize"
+            class="primary-button"
+            data-i18n="＋ 自定义照片主题"
+          >
+            ＋ 自定义照片主题
+          </button>
+        </div>
+        <p id="theme-status" role="status"></p>
+        <p id="shared-expiry" hidden></p>
+        <div id="shared-actions" hidden>
+          <a class="secondary-button" href="./" data-i18n="制作自己的游戏"
+            >制作自己的游戏</a
+          ><button
+            id="delete-shared"
+            class="secondary-button"
+            type="button"
+            hidden
+            data-i18n="删除此分享"
+          >
+            删除此分享
+          </button>
+        </div>
+        <form id="custom-form" hidden>
+          <button
+            type="button"
+            id="custom-back"
+            class="secondary-button"
+            data-i18n="返回主题"
+          >
+            返回主题
+          </button>
+          <h2 data-i18n="制作你的主题">制作你的主题</h2>
+          <label for="game-title" data-i18n="游戏名称">游戏名称</label>
+          <input id="game-title" type="text" maxlength="80" />
+          <p
+            data-i18n="每个等级对应一张照片。点击保存分享才会上传裁剪后的照片，拥有链接的人都可以查看。"
+          >
+            每个等级对应一张照片。点击保存分享才会上传裁剪后的照片，拥有链接的人都可以查看。
+          </p>
+          <label for="level-count" data-i18n="等级数量（2–15）"
+            >等级数量（2–15）</label
+          >
+          <input
+            id="level-count"
+            type="number"
+            min="2"
+            max="15"
+            step="1"
+            value="10"
+            required
+          />
+          <label for="photo-files" data-i18n="添加照片（最多 15 张）"
+            >添加照片（最多 15 张）</label
+          >
+          <div class="photo-upload">
+            <input
+              id="photo-files"
+              class="photo-upload-input"
+              type="file"
+              accept="image/*"
+              multiple
+              aria-describedby="photo-status"
+            />
+            <span class="photo-upload-icon" aria-hidden="true">＋</span>
+            <strong data-i18n="选择照片">选择照片</strong>
+            <span data-i18n="最多 15 张 · 自动圆形裁剪"
+              >最多 15 张 · 自动圆形裁剪</span
+            >
+          </div>
+          <p id="photo-status" role="status"></p>
+          <ol id="photo-list" class="photo-list"></ol>
+          <fieldset class="creation-section">
+            <legend data-i18n="分享中包含的默认主题">
+              分享中包含的默认主题
+            </legend>
+            <p data-i18n="全部取消勾选，朋友将只看到你的照片主题。">
+              全部取消勾选，朋友将只看到你的照片主题。
+            </p>
+            <div id="included-themes" class="theme-checks"></div>
+          </fieldset>
+          <fieldset class="creation-section">
+            <legend data-i18n="游戏配色">游戏配色</legend>
+            <p data-i18n="颜色会立即应用，游戏预览也会使用这些颜色。">
+              颜色会立即应用，游戏预览也会使用这些颜色。
+            </p>
+            <div class="palette-workspace">
+              <section
+                class="palette-preview"
+                aria-labelledby="color-preview-title"
+              >
+                <h3 id="color-preview-title" data-i18n="实时预览">实时预览</h3>
+                <div
+                  class="preview-switches"
+                  role="group"
+                  aria-label="预览画面"
+                  data-i18n-label="预览画面"
+                >
+                  <button
+                    id="preview-selection"
+                    type="button"
+                    class="secondary-button"
+                    aria-pressed="true"
+                    data-i18n="主题选择"
+                  >
+                    主题选择
+                  </button>
+                  <button
+                    id="preview-board"
+                    type="button"
+                    class="secondary-button"
+                    aria-pressed="false"
+                    data-i18n="游戏区域"
+                  >
+                    游戏区域
+                  </button>
+                </div>
+                <canvas
+                  id="color-preview"
+                  width="1200"
+                  height="630"
+                  role="img"
+                  aria-label="主题与游戏配色预览"
+                  data-i18n-label="主题与游戏配色预览"
+                ></canvas>
+                <button
+                  id="preview-game-over"
+                  type="button"
+                  class="secondary-button"
+                  aria-pressed="false"
+                  hidden
+                  data-i18n="预览结束画面"
+                >
+                  预览结束画面
+                </button>
+                <p id="color-preview-status" role="status"></p>
+              </section>
+              <div id="palette-controls" class="palette-controls"></div>
+            </div>
+            <button
+              id="reset-palette"
+              type="button"
+              class="secondary-button"
+              data-i18n="恢复默认配色"
+            >
+              恢复默认配色
+            </button>
+          </fieldset>
+          <div class="creation-actions">
+            <button
+              id="play-custom"
+              class="primary-button"
+              type="submit"
+              disabled
+              data-i18n="使用这个主题开始"
+            >
+              使用这个主题开始
+            </button>
+            <button
+              id="share-game"
+              type="button"
+              class="primary-button"
+              disabled
+              data-i18n="保存并分享"
+            >
+              保存并分享
+            </button>
+          </div>
+          <p id="share-status" role="status"></p>
+          <p data-i18n="分享将在 14 天后自动删除，包括上传的照片。">
+            分享将在 14 天后自动删除，包括上传的照片。
+          </p>
+          <div id="share-result" class="creation-section" hidden>
+            <p id="share-expiry" hidden></p>
+            <label for="share-link" data-i18n="发送给朋友">发送给朋友</label>
+            <input id="share-link" type="url" readonly />
+            <button
+              id="copy-share"
+              type="button"
+              class="secondary-button"
+              data-i18n="复制链接"
+            >
+              复制链接
+            </button>
+            <label
+              for="delete-link"
+              data-i18n="私人删除链接（请保存，不要分享）"
+              >私人删除链接（请保存，不要分享）</label
+            >
+            <input id="delete-link" type="url" readonly />
+            <button
+              id="copy-delete"
+              type="button"
+              class="secondary-button"
+              data-i18n="复制删除链接"
+            >
+              复制删除链接
+            </button>
+            <p data-i18n="链接保存的是当前版本。修改后再次分享会生成新的链接。">
+              链接保存的是当前版本。修改后再次分享会生成新的链接。
+            </p>
+          </div>
+        </form>
+      </div>
+    </section>
+    <section
+      id="level-screen"
+      class="theme-screen"
+      hidden
+      aria-labelledby="level-heading"
+    >
+      <div class="theme-panel">
+        <button
+          id="preview-back"
+          class="secondary-button"
+          type="button"
+          data-i18n="返回主题"
+        >
+          返回主题
+        </button>
+        <p class="eyebrow" data-i18n="等级预览">等级预览</p>
+        <h1 id="level-heading"></h1>
+        <p data-i18n="从小到大，查看每个合成等级。">
+          从小到大，查看每个合成等级。
+        </p>
+        <p data-i18n="点击任意图片调整裁剪。修改仅保存在此浏览器。">
+          点击任意图片调整裁剪。修改仅保存在此浏览器。
+        </p>
+        <ol id="level-preview-list" class="level-previews"></ol>
+        <p id="preview-status" role="status"></p>
+        <button
+          id="preview-play"
+          type="button"
+          class="primary-button"
+          disabled
+          data-i18n="开始游戏"
+        >
+          开始游戏
+        </button>
+      </div>
+    </section>
+    <dialog id="crop-dialog" class="crop-dialog" aria-labelledby="crop-title">
+      <h2 id="crop-title" data-i18n="调整圆形裁剪">调整圆形裁剪</h2>
+      <canvas
+        id="crop-preview"
+        width="320"
+        height="320"
+        aria-label="圆形裁剪预览"
+        data-i18n-label="圆形裁剪预览"
+      ></canvas>
+      <label for="crop-zoom" data-i18n="缩放">缩放</label
+      ><input
+        id="crop-zoom"
+        type="range"
+        min="0.5"
+        max="4"
+        step="0.01"
+        value="1"
+      />
+      <label for="crop-x" data-i18n="水平位置">水平位置</label
+      ><input
+        id="crop-x"
+        type="range"
+        min="0"
+        max="1"
+        step="0.01"
+        value="0.5"
+      />
+      <label for="crop-y" data-i18n="垂直位置">垂直位置</label
+      ><input
+        id="crop-y"
+        type="range"
+        min="0"
+        max="1"
+        step="0.01"
+        value="0.5"
+      />
+      <div class="crop-actions">
+        <button id="crop-cancel" type="button" data-i18n="取消">取消</button
+        ><button
+          id="crop-save"
+          type="button"
+          class="primary-button"
+          data-i18n="保存裁剪"
+        >
+          保存裁剪
+        </button>
+      </div>
+    </dialog>
+    <main
+      hidden
+      id="app"
+      class="game"
+      aria-label="合成大默茨"
+      data-i18n-label="合成大默茨"
+    >
+      <header id="top" class="game-toolbar">
+        <label class="language-control" for="game-language"
+          ><span data-i18n="语言">语言</span
+          ><select id="game-language" class="language-select">
+            <option value="zh">中文</option>
+            <option value="fr">Français</option>
+            <option value="en">English</option>
+          </select></label
+        >
+        <button
+          type="button"
+          id="choose-theme"
+          class="restart-button"
+          data-i18n="主题"
+        >
+          主题
+        </button>
+        <div class="score">
+          <span data-i18n="分数">分数</span><b id="sc">0</b>
+        </div>
+        <div class="score">
+          <span data-i18n="最高分">最高分</span><b id="best">0</b>
+        </div>
+        <button
+          type="button"
+          id="snd"
+          class="sound-button"
+          aria-label="音效"
+          data-i18n-label="音效"
+        >
+          🔊
+        </button>
+        <button type="button" id="pause-game" class="restart-button" aria-pressed="false" data-i18n="暂停">暂停</button>
+        <button type="button" id="undo-drop" class="restart-button" disabled data-i18n="撤销">撤销</button>
+        <button type="button" id="re" class="restart-button" data-i18n="重来">
+          重来
+        </button>
+      </header>
+      <div class="merz-progress" id="merz-progress" aria-label="合成等级"><span id="merge-name">MERZVERSE</span><button type="button" id="game-gallery" class="gallery-link">图鉴</button></div>
+      <div id="game-info" class="game-info">
+        <p data-i18n="拖动瞄准，松手投放 · P 暂停">拖动瞄准，松手投放 · P 暂停</p>
+        <div class="next-piece"><span data-i18n="下一颗">下一颗</span><canvas id="next-face" width="64" height="64" aria-label="下一颗" data-i18n-label="下一颗"></canvas></div>
+      </div>
+      <div id="wrap" class="game-board">
+        <canvas
+          id="c"
+          tabindex="0"
+          aria-label="游戏区域"
+          data-i18n-label="游戏区域"
+          data-i18n="使用左右方向键移动，空格或向下方向键投放。"
+          >使用左右方向键移动，空格或向下方向键投放。</canvas
+        >
+        <div id="pause-overlay" class="pause-overlay" hidden>
+          <h2 data-i18n="已暂停">已暂停</h2>
+          <button type="button" id="resume-game" class="primary-button" data-i18n="继续">继续</button>
+        </div>
+        <div id="over" class="game-over">
+          <h2 data-i18n="游戏结束">游戏结束</h2>
+          <p><span data-i18n="本局得分">本局得分</span> <b id="fs">0</b></p>
+          <button type="button" id="again" data-i18n="再来一局">
+            再来一局
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <dialog id="meme-gallery" class="meme-gallery">
+      <div class="gallery-heading"><div><p class="eyebrow">DIE SAMMLUNG</p><h2>默茨梗图图鉴</h2></div><button type="button" id="close-gallery" class="secondary-button" aria-label="关闭图鉴">关闭 ✕</button></div>
+      <p class="gallery-intro">点击图片看完整梗图。圆球只显示局部；这里保留完整画面与 X 来源。梗名与游戏台词属于娱乐创作。</p>
+      <div id="gallery-grid" class="gallery-grid"></div>
+    </dialog>
+    <dialog id="meme-lightbox" class="meme-lightbox"><button type="button" id="close-lightbox" class="secondary-button" aria-label="关闭图片">关闭 ✕</button><img id="lightbox-image" alt=""><p id="lightbox-title"></p></dialog>
+    <dialog id="restart-dialog" class="restart-dialog">
+      <form method="dialog">
+        <h2 data-i18n="重新开始这一局？">重新开始这一局？</h2>
+        <p data-i18n="本局进度将清空，最高分会保留。">本局进度将清空，最高分会保留。</p>
+        <div class="dialog-actions">
+          <button class="secondary-button" value="cancel" data-i18n="取消" autofocus>取消</button>
+          <button class="primary-button" value="restart" data-i18n="重新开始">重新开始</button>
+        </div>
+      </form>
+    </dialog>
+    <script src="scripts/themes.js"></script>
+    <script src="scripts/palette.js"></script>
+    <script src="scripts/game.js"></script>
+    <script src="scripts/theme-picker.js"></script>
+    <script src="scripts/sharing-config.js"></script>
+    <script src="scripts/game-preview.js"></script>
+    <script src="scripts/sharing.js"></script>
+    <script src="scripts/merz.js"></script>
+
+  </body>
+</html>

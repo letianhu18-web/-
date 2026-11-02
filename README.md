@@ -6,6 +6,7 @@
 
 | 项目 | 说明 | 代码 |
 |---|---|---|
+| 合成大默茨 · MERZVERSE | X 梗图合成游戏，8 个等级、原帖图鉴和单步撤销 | [merge-merz](./merge-merz/) |
 | 合成不可说 · 优化版 | 暂停、下一颗预览、单步撤销；手机触控及物理修复 | [suika-the-politician](./suika-the-politician/) |
 | 手势控制颗粒圣诞树 | 使用摄像头识别拇指与食指距离，实时控制 3D 粒子圣诞树缩放 | [根目录](./) |
 | 母亲节互动花园 | 包含花瓣动画、祝福文字和互动花园效果 | [mothers-day-flower-garden](./mothers-day-flower-garden/) |

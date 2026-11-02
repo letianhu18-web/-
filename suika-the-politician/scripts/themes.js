@@ -1,0 +1,161 @@
+window.BUILT_IN_THEMES = [
+  {
+    id: "mywho",
+    name: "迈乎",
+    sources: [
+      "assets/images/mywho/level-01.webp",
+      "assets/images/mywho/level-02.webp",
+      "assets/images/mywho/level-03.webp",
+      "assets/images/mywho/level-04.webp",
+      "assets/images/mywho/level-05.webp",
+      "assets/images/mywho/level-06.webp",
+      "assets/images/mywho/level-07.webp",
+      "assets/images/mywho/level-08.webp",
+      "assets/images/mywho/level-09.webp",
+      "assets/images/mywho/level-10.webp",
+      "assets/images/mywho/level-11.webp",
+    ],
+  },
+  {
+    id: "mbappe",
+    name: "姆巴佩",
+    sources: [
+      "assets/images/mbappe/level-01.webp",
+      "assets/images/mbappe/level-02.webp",
+      "assets/images/mbappe/level-03.webp",
+      "assets/images/mbappe/level-04.webp",
+      "assets/images/mbappe/level-05.webp",
+      "assets/images/mbappe/level-06.webp",
+      "assets/images/mbappe/level-07.webp",
+      "assets/images/mbappe/level-08.webp",
+      "assets/images/mbappe/level-09.webp",
+      "assets/images/mbappe/level-10.webp",
+    ],
+    crops: [
+      {
+        zoom: 1.1,
+        cx: 0.49,
+        cy: 0.5,
+      },
+      {
+        cx: 0.5,
+        cy: 0.38,
+        zoom: 1,
+      },
+      {
+        zoom: 1.06,
+        cx: 0.49,
+        cy: 0.42,
+      },
+      {
+        zoom: 1.06,
+        cx: 0.52,
+        cy: 0.51,
+      },
+      {
+        zoom: 1.09,
+        cx: 0.48,
+        cy: 0.45,
+      },
+      {
+        zoom: 1.03,
+        cx: 0.51,
+        cy: 0.48,
+      },
+      {
+        cx: 0.6,
+        cy: 0.39,
+        zoom: 1.1,
+      },
+      {
+        cx: 0.52,
+        cy: 0.63,
+        zoom: 1.8,
+      },
+      {
+        cx: 0.55,
+        cy: 0.31,
+        zoom: 1.5,
+      },
+      {
+        zoom: 1.22,
+        cx: 0.51,
+        cy: 0.71,
+      },
+    ],
+  },
+  {
+    id: "macron",
+    name: "马克龙",
+    sources: [
+      "assets/images/macron/level-01.webp",
+      "assets/images/macron/level-02.webp",
+      "assets/images/macron/level-03.webp",
+      "assets/images/macron/level-04.webp",
+      "assets/images/macron/level-05.webp",
+      "assets/images/macron/level-06.webp",
+      "assets/images/macron/level-07.webp",
+      "assets/images/macron/level-08.webp",
+      "assets/images/macron/level-09.webp",
+      "assets/images/macron/level-10.webp",
+      "assets/images/macron/level-11.webp",
+    ],
+    crops: [
+      {
+        zoom: 1.1,
+        cx: 0.5,
+        cy: 0.51,
+      },
+      {
+        zoom: 1,
+        cx: 0.5,
+        cy: 0.36,
+      },
+      {
+        zoom: 1.6,
+        cx: 0.54,
+        cy: 0.31,
+      },
+      {
+        zoom: 1.05,
+        cx: 0.51,
+        cy: 0.54,
+      },
+      {
+        zoom: 1.13,
+        cx: 0.48,
+        cy: 0.51,
+      },
+      {
+        zoom: 1.15,
+        cx: 0.36,
+        cy: 0.44,
+      },
+      {
+        zoom: 1.04,
+        cx: 0.54,
+        cy: 0.51,
+      },
+      {
+        zoom: 2.49,
+        cx: 0.57,
+        cy: 0.2,
+      },
+      {
+        zoom: 1.11,
+        cx: 0.52,
+        cy: 0.47,
+      },
+      {
+        zoom: 1.15,
+        cx: 0.5,
+        cy: 0.47,
+      },
+      {
+        zoom: 1.22,
+        cx: 0.61,
+        cy: 0.44,
+      },
+    ],
+  },
+];

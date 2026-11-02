@@ -1,11 +1,12 @@
 # Web Projects｜网页项目合集
 
-这个仓库收录了四个独立的互动网页项目。
+这个仓库收录了多个独立的互动网页项目。
 
 ## 项目目录
 
 | 项目 | 说明 | 代码 |
 |---|---|---|
+| 合成不可说 · 优化版 | 暂停、下一颗预览、单步撤销；手机触控及物理修复 | [suika-the-politician](./suika-the-politician/) |
 | 手势控制颗粒圣诞树 | 使用摄像头识别拇指与食指距离，实时控制 3D 粒子圣诞树缩放 | [根目录](./) |
 | 母亲节互动花园 | 包含花瓣动画、祝福文字和互动花园效果 | [mothers-day-flower-garden](./mothers-day-flower-garden/) |
 | 十里山路·扛麦挑战 | 山路跑酷小游戏；包子和石头每局随机生成，游戏不会自动暂停 | [wheat-mountain-trail](./wheat-mountain-trail/) |

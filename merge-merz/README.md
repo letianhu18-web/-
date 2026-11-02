@@ -17,7 +17,7 @@
 | 1 | 青春默茨 / Analog-Merz | 视频梗素材 | [@_FriedrichMerz](https://x.com/_FriedrichMerz/status/1440742692330164227) |
 | 2 | 咖喱默茨 / Currywurst | 经典梗素材 | [@_FriedrichMerz](https://x.com/_FriedrichMerz/status/1603368811213856768) |
 | 3 | 见习默茨 / Frühschicht | 经典梗素材 | [@_FriedrichMerz](https://x.com/_FriedrichMerz/status/1644952920981487616) |
-| 4 | 夜班默茨 / Nachtschicht | 经典梗素材 | [@_FriedrichMerz](https://x.com/_FriedrichMerz/status/1644952920981487616) |
+| 4 | 鸡蛋默茨 / Merz, leck Eier! | X 梗图 | [@LINKEPELLI](https://x.com/LINKEPELLI/status/2041050889188770234) |
 | 5 | 番茄酱默茨 / Ketchup-Merz | X 梗图的媒体拼图 | [@RalfHeinrich58](https://x.com/RalfHeinrich58/status/1603671439990824962) |
 | 6 | 省房租默茨 / Doppel-Schicht | X 梗图 | [@eM_aka_zero](https://x.com/eM_aka_zero/status/1644987554310270978) |
 | 7 | 重数默茨 / Nochmal zählen | X 梗图 | [@meme_ec](https://x.com/meme_ec/status/1919666911341678830) |

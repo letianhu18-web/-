@@ -46,17 +46,17 @@
   },
   {
     "level": 4,
-    "name": "夜班默茨",
-    "de": "Nachtschicht",
-    "kind": "经典梗素材",
-    "author": "_FriedrichMerz",
-    "post": "https://x.com/_FriedrichMerz/status/1644952920981487616",
-    "media": "https://pbs.twimg.com/media/FtQLz2AWcAAOJVI.jpg",
-    "image": "assets/memes/level-04.webp",
+    "name": "鸡蛋默茨",
+    "de": "Merz, leck Eier!",
+    "kind": "X 梗图",
+    "author": "LINKEPELLI",
+    "post": "https://x.com/LINKEPELLI/status/2041050889188770234",
+    "media": "https://pbs.twimg.com/media/HFNE9hsXQAA7uLT.jpg",
+    "image": "assets/memes/level-04-eggs.webp",
     "crop": {
-      "zoom": 1.5,
-      "cx": 0.38,
-      "cy": 0.35
+      "zoom": 1.0,
+      "cx": 0.61,
+      "cy": 0.55
     }
   },
   {

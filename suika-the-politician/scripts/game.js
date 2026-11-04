@@ -107,6 +107,7 @@
 
   let balls,
     effects,
+    popups,
     score,
     best = 0,
     heldLv,
@@ -139,7 +140,10 @@
   } catch (e) {}
   elBest.textContent = best;
 
-  const rnd = () => Math.floor(Math.random() * Math.min(5, N));
+  // Spawn from roughly the lower half of the levels (10-11 levels -> 1-5), so
+  // small custom themes never spawn their top level directly.
+  let spawnLevels = 1;
+  const rnd = () => Math.floor(Math.random() * spawnLevels);
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
   function mk(lv, x, y) {
@@ -170,6 +174,7 @@
     update.danger = false;
     balls = [];
     effects = [];
+    popups = [];
     score = 0;
     over = false;
     cool = 0;
@@ -307,6 +312,7 @@
       sfxMerge(a.lv);
       if (a.lv === N - 1) {
         score += 200;
+        popups.push({ x, y, text: "+200", t: 0 });
         continue;
       }
       const nb = mk(a.lv + 1, x, y);
@@ -317,7 +323,9 @@
       nb.age = Math.max(a.age, b.age);
       nb.pop = 0.55;
       add.push(nb);
-      score += ((nb.lv + 1) * (nb.lv + 2)) / 2;
+      const gain = ((nb.lv + 1) * (nb.lv + 2)) / 2;
+      score += gain;
+      popups.push({ x, y: y - nb.r * 0.4, text: "+" + gain, t: 0 });
     }
     merges = [];
     balls = balls.filter((b) => !b.dead).concat(add);
@@ -376,26 +384,60 @@
     update.danger = danger;
     for (const f of effects) f.t += dt;
     effects = effects.filter((f) => f.t < 0.35);
+    for (const p of popups) p.t += dt;
+    popups = popups.filter((p) => p.t < 0.8);
   }
 
   let palette = window.gamePalette.get();
   document.addEventListener("palettechange", () => {
     palette = window.gamePalette.get();
     draw.bg = null;
+    sprites = [];
   });
 
+  // Per-level sprites rendered once at device resolution. Downscaling the 320px
+  // photos with high-quality smoothing on every frame was the main draw cost on phones.
+  let sprites = [];
+  function sprite(lv) {
+    if (sprites[lv]) return sprites[lv];
+    const k = canvas.width / W,
+      r = R[lv];
+    const body = document.createElement("canvas");
+    body.width = body.height = Math.max(1, Math.ceil(2 * r * k));
+    const b = body.getContext("2d");
+    b.imageSmoothingEnabled = true;
+    b.imageSmoothingQuality = "high";
+    b.scale(k, k);
+    b.drawImage(imgs[lv], 0, 0, 2 * r, 2 * r);
+    b.beginPath();
+    b.arc(r, r, r - 1, 0, 6.2832);
+    b.strokeStyle = palette.ballBorder + "d9";
+    b.lineWidth = 2;
+    b.stroke();
+    return (sprites[lv] = body);
+  }
+
   function drawBall(lv, x, y, a, scale) {
-    const r = R[lv] * scale;
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.rotate(a);
-    ctx.drawImage(imgs[lv], -r, -r, 2 * r, 2 * r);
-    ctx.restore();
-    ctx.beginPath();
-    ctx.arc(x, y, r - 0.5, 0, 6.2832);
-    ctx.strokeStyle = palette.ballBorder + "d9";
-    ctx.lineWidth = 2;
-    ctx.stroke();
+    const r = R[lv] * scale,
+      s = sprite(lv);
+    if (a) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(a);
+      ctx.drawImage(s, -r, -r, 2 * r, 2 * r);
+      ctx.restore();
+    } else ctx.drawImage(s, x - r, y - r, 2 * r, 2 * r);
+  }
+
+  // Where the held ball would come to rest if dropped straight down.
+  function landingY(x, r) {
+    let y = H - r;
+    for (const b of balls) {
+      const dx = b.x - x,
+        rr = b.r + r;
+      if (Math.abs(dx) < rr) y = Math.min(y, b.y - Math.sqrt(rr * rr - dx * dx));
+    }
+    return Math.max(DROP_Y, y);
   }
 
   function draw(now) {
@@ -425,19 +467,49 @@
 
     if (!over && heldLv >= 0) {
       const r = R[heldLv],
-        x = clamp(aimX, r + 2, W - r - 2);
+        x = clamp(aimX, r + 2, W - r - 2),
+        ly = landingY(x, r);
       ctx.setLineDash([4, 8]);
       ctx.strokeStyle = palette.guide + "66";
       ctx.lineWidth = 2;
+      if (ly - r > DROP_Y + r) {
+        ctx.beginPath();
+        ctx.moveTo(x, DROP_Y + r);
+        ctx.lineTo(x, ly - r);
+        ctx.stroke();
+      }
       ctx.beginPath();
-      ctx.moveTo(x, DROP_Y + r);
-      ctx.lineTo(x, H);
+      ctx.arc(x, ly, r - 1, 0, 6.2832);
       ctx.stroke();
       ctx.setLineDash([]);
       drawBall(heldLv, x, DROP_Y, 0, 1);
     }
 
     for (const b of balls) drawBall(b.lv, b.x, b.y, b.a, b.pop);
+
+    // Countdown ring on balls stuck above the line (game over after 2 s).
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = "#ff5a5a";
+    for (const b of balls) {
+      if (b.over <= 0) continue;
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, b.r + 3, -Math.PI / 2, -Math.PI / 2 + 6.2832 * Math.min(1, b.over / 2));
+      ctx.stroke();
+    }
+
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = "800 22px system-ui";
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = "#101824";
+    ctx.fillStyle = palette.effect;
+    for (const p of popups) {
+      const y = p.y - 36 * p.t;
+      ctx.globalAlpha = Math.min(1, 2.5 * (1 - p.t / 0.8));
+      ctx.strokeText(p.text, p.x, y);
+      ctx.fillText(p.text, p.x, y);
+    }
+    ctx.globalAlpha = 1;
 
     for (const f of effects) {
       const p = f.t / 0.35;
@@ -470,6 +542,7 @@
     canvas.width = Math.round(cw * dpr);
     canvas.height = Math.round(ch * dpr);
     draw.bg = null;
+    sprites = [];
     if (imgs.length) draw(performance.now());
   }
 
@@ -563,6 +636,7 @@
     undoButton.disabled = true;
     merges = [];
     effects = [];
+    popups = [];
     over = false;
     update.danger = false;
     elSc.textContent = score;
@@ -619,6 +693,8 @@
               { length: N },
               (_, i) => 17 + 113 * Math.pow(i / (N - 1), 1.3),
             );
+      spawnLevels = Math.max(1, Math.min(5, Math.round(N / 2)));
+      sprites = [];
       reset();
       fit();
       setPaused(false);

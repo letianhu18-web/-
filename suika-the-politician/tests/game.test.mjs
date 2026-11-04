@@ -24,7 +24,9 @@ function fixture({ width = 390, height = 844 } = {}) {
     });
     return elements.get(id);
   }
+  let created = 0;
   const document = { hidden: false, getElementById: element,
+    createElement: () => element(`created-${++created}`),
     addEventListener(name, cb) { events.set(`document:${name}`, cb); } };
   const sandbox = {
     document, performance: { now: () => now },
@@ -44,8 +46,9 @@ function fixture({ width = 390, height = 844 } = {}) {
   code = code.replace('  window.mergeGame = {', `
     window.test = {
       seed: values => { balls = values.map(b => Object.assign(mk(b.lv, b.x, b.y), b)); },
-      substep, update, drop, endGame, fit,
-      state: () => ({balls, score, heldLv, nextLv, cool, paused, over, aimX}),
+      substep, update, drop, endGame, fit, draw, landingY, rnd,
+      sprites: () => sprites,
+      state: () => ({balls, score, heldLv, nextLv, cool, paused, over, aimX, popups}),
     };
     window.mergeGame = {`);
   vm.runInNewContext(code, sandbox);
@@ -162,6 +165,44 @@ test('invalid theme sizes fail before entering the physics loop', () => {
   for (const count of [0,1,16]) assert.throws(() => g.mergeGame.start(Array(count).fill({})), /2–15/);
 });
 
+
+test('spawned levels scale with the theme size', () => {
+  const g = fixture();
+  for (const [count, pool] of [[2, 1], [6, 3], [10, 5], [11, 5]]) {
+    g.mergeGame.start(Array.from({ length: count }, () => ({})));
+    const seen = new Set(Array.from({ length: 400 }, () => g.test.rnd()));
+    assert.equal(Math.max(...seen), pool - 1);
+  }
+});
+
+test('ball sprites are cached between frames and rebuilt after a resize', () => {
+  const g = fixture();
+  g.test.seed([{lv:2,x:200,y:500},{lv:3,x:300,y:500}]);
+  g.test.draw(0);
+  const first = g.test.sprites()[2];
+  assert.ok(first);
+  g.test.draw(16);
+  assert.equal(g.test.sprites()[2], first);
+  g.test.fit(); g.test.draw(32);
+  assert.notEqual(g.test.sprites()[2], first);
+});
+
+test('landing preview rests on the highest ball below the aim', () => {
+  const g = fixture();
+  assert.equal(g.test.landingY(100, 20), 700 - 20);
+  g.test.seed([{lv:0,x:100,y:600}]);
+  const r0 = g.test.state().balls[0].r;
+  assert.equal(g.test.landingY(100, 20), 600 - r0 - 20);
+  assert.equal(g.test.landingY(300, 20), 700 - 20);
+});
+
+test('merges show a score popup that fades out', () => {
+  const g = fixture();
+  g.test.seed([{lv:0,x:180,y:500},{lv:0,x:190,y:500}]); g.test.substep(0);
+  assert.equal(g.test.state().popups[0].text, '+3');
+  for (let i = 0; i < 60; i++) g.test.update(1 / 60);
+  assert.equal(g.test.state().popups.length, 0);
+});
 
 test('canceling a later restart dialog never reuses a previous confirmation', () => {
   const g = fixture(); g.test.drop(); g.fire('re','click');

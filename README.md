@@ -19,6 +19,10 @@
 
 [打开《合成大默茨》最新版](https://letianhu18-web.github.io/-/merge-merz/)
 
+[打开《手势控制颗粒圣诞树》](https://letianhu18-web.github.io/-/christmas-tree/)
+
+[打开《母亲节互动花园》](https://letianhu18-web.github.io/-/mothers-day-flower-garden/)
+
 [打开《十里山路·扛麦挑战》](https://wheat-mountain-trail-random.huheinz.chatgpt.site)
 
 [打开《超级马里奥·真人主角版》](https://mario-photo-hero.huheinz.chatgpt.site)

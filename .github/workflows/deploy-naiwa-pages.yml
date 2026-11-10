@@ -9,6 +9,10 @@ on:
       - "safe-after-school/**"
       - "suika-the-politician/**"
       - "merge-merz/**"
+      - "mothers-day-flower-garden/**"
+      - "index.html"
+      - "script.js"
+      - "styles.css"
       - ".github/workflows/deploy-naiwa-pages.yml"
   workflow_dispatch:
 
@@ -43,6 +47,9 @@ jobs:
           mkdir -p _site/merge-merz
           cp merge-merz/index.html merge-merz/preview.webp _site/merge-merz/
           cp -a merge-merz/assets merge-merz/scripts merge-merz/styles _site/merge-merz/
+          mkdir -p _site/mothers-day-flower-garden _site/christmas-tree
+          cp mothers-day-flower-garden/index.html mothers-day-flower-garden/script.js mothers-day-flower-garden/styles.css _site/mothers-day-flower-garden/
+          cp index.html script.js styles.css _site/christmas-tree/
           touch _site/.nojekyll
       - name: Package static site
         uses: actions/upload-pages-artifact@v3

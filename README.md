@@ -8,7 +8,7 @@
 
 | 项目 | 说明 | 代码 |
 |---|---|---|
-| 合成大默茨 · MERZVERSE（最新版） | 第 3 级为默茨鸡蛋脸，第 4 级为 Merz, leck Eier! 贴纸；8 个等级、图鉴和单步撤销 | [merge-merz](./merge-merz/) |
+| 合成大默茨 · MERZVERSE（最新版） | 11 个等级，含啤酒垫、Mr. Burns、Rambo Zambo 等经典梗图；图鉴、落点预览和单步撤销 | [merge-merz](./merge-merz/) |
 | 十里山路·扛麦挑战（中文版） | 包子和石头每局随机生成，游戏不会自动暂停 | [wheat-mountain-trail](./wheat-mountain-trail/) |
 | 超级马里奥·真人主角版（中文版） | 真人脸部主角，4 个可选关卡，支持手机触屏和键盘 | [super-mario-photo-hero](./super-mario-photo-hero/) |
 | 合成不可说 · 优化版 | 暂停、下一颗预览、单步撤销；手机触控及物理修复 | [suika-the-politician](./suika-the-politician/) |
@@ -17,7 +17,7 @@
 
 ## 在线游戏
 
-[打开《合成大默茨》最新版](https://letianhu18-web.github.io/-/merge-merz/?v=egg-face-3)
+[打开《合成大默茨》最新版](https://letianhu18-web.github.io/-/merge-merz/)
 
 [打开《十里山路·扛麦挑战》](https://wheat-mountain-trail-random.huheinz.chatgpt.site)
 

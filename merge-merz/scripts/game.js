@@ -404,7 +404,7 @@
   // Per-level sprites rendered once at device resolution. Downscaling the 320px
   // photos with high-quality smoothing on every frame was the main draw cost on phones.
   let sprites = [];
-  const badgeColors = ["#a8d5ff", "#e5bd51", "#72d2c2", "#b899ee", "#f58d73", "#70b5f3", "#f08fc0", "#ffe8a0"];
+  const badgeColors = ["#a8d5ff", "#e5bd51", "#72d2c2", "#b899ee", "#f58d73", "#70b5f3", "#f08fc0", "#ffe8a0", "#9be28a", "#ffb35c", "#d6dde8"];
   function sprite(lv) {
     if (sprites[lv]) return sprites[lv];
     const k = canvas.width / W,

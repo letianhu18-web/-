@@ -86,19 +86,54 @@ function resize() {
 window.addEventListener('resize', resize);
 resize();
 
+let lastTime = 0;
+let shownScale = '';
+
 function animate(time) {
   requestAnimationFrame(animate);
 
-  currentScale += (targetScale - currentScale) * 0.12;
+  // Same easing speed on 60 Hz and 120 Hz screens.
+  const frames = lastTime ? Math.min(3, (time - lastTime) / (1000 / 60)) : 1;
+  lastTime = time;
+  currentScale += (targetScale - currentScale) * (1 - Math.pow(0.88, frames));
   treeGroup.scale.setScalar(currentScale);
 
   treeGroup.rotation.y = Math.sin(time * 0.00025) * 0.2;
-  star.rotation.y += 0.02;
+  star.rotation.y += 0.02 * frames;
 
-  scaleText.textContent = `${currentScale.toFixed(2)}x`;
+  const label = `${currentScale.toFixed(2)}x`;
+  if (label !== shownScale) {
+    shownScale = label;
+    scaleText.textContent = label;
+  }
   renderer.render(scene, camera);
 }
 requestAnimationFrame(animate);
+
+// Without a camera the tree can still be scaled: mouse wheel, or drag / swipe up and down.
+const MIN_SCALE = 0.6;
+const MAX_SCALE = 2.7;
+function nudgeScale(amount) {
+  targetScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, targetScale + amount));
+}
+canvas.addEventListener('wheel', (event) => {
+  event.preventDefault();
+  nudgeScale(-event.deltaY * 0.0015);
+}, { passive: false });
+let dragY = null;
+canvas.style.touchAction = 'none';
+canvas.addEventListener('pointerdown', (event) => {
+  dragY = event.clientY;
+  canvas.setPointerCapture(event.pointerId);
+});
+canvas.addEventListener('pointermove', (event) => {
+  if (dragY === null) return;
+  nudgeScale((dragY - event.clientY) * 0.006);
+  dragY = event.clientY;
+});
+for (const type of ['pointerup', 'pointercancel']) {
+  canvas.addEventListener(type, () => { dragY = null; });
+}
 
 function updateScaleFromHand(landmarks) {
   const thumb = landmarks[4];
@@ -119,7 +154,7 @@ function updateScaleFromHand(landmarks) {
 
 async function initHands() {
   if (!window.Hands || !window.Camera) {
-    statusText.textContent = 'MediaPipe 加载失败';
+    statusText.textContent = 'MediaPipe 加载失败，可用滚轮或上下拖动缩放';
     return;
   }
 
@@ -156,7 +191,7 @@ async function initHands() {
     statusText.textContent = '摄像头已开启，开始手势识别';
   } catch (error) {
     console.error(error);
-    statusText.textContent = '摄像头权限被拒绝或不可用';
+    statusText.textContent = '摄像头不可用，可用滚轮或上下拖动缩放';
   }
 }
 

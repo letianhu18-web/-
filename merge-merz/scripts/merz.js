@@ -44,7 +44,7 @@
       lightbox.showModal();
     });
     const title = document.createElement("h3");
-    title.textContent = "0" + level.level + " · " + level.name;
+    title.textContent = String(level.level).padStart(2, "0") + " · " + level.name;
     const subtitle = document.createElement("p");
     subtitle.textContent = level.de + " · " + level.kind;
     const source = document.createElement("a");

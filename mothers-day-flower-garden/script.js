@@ -59,9 +59,8 @@ function createFlower(x, y, options = {}) {
 
 function trimFlowers() {
   const maxFlowers = window.matchMedia("(max-width: 760px)").matches ? 82 : 130;
-  const flowers = field.querySelectorAll(".flower");
-  if (flowers.length <= maxFlowers) return;
-  flowers[0].remove();
+  const flowers = field.getElementsByClassName("flower");
+  while (flowers.length > maxFlowers) flowers[0].remove();
 }
 
 function danceFlower(flower) {
@@ -82,6 +81,8 @@ function showNote(x, y, text = notes[Math.floor(random(0, notes.length - 0.01))]
 }
 
 function addPetal(x, y, intensity = 1) {
+  if (petals.length >= 500) return;
+  requestPetalFrame();
   petals.push({
     x,
     y,
@@ -114,23 +115,37 @@ function drawPetal(petal) {
   ctx.restore();
 }
 
-function animatePetals() {
+let petalFrame = 0;
+let lastPetalTime = 0;
+
+// The loop only runs while petals exist, and steps by elapsed time so petals
+// fall at the same speed on 60 Hz and 120 Hz screens.
+function animatePetals(now) {
+  petalFrame = 0;
+  const step = lastPetalTime ? Math.min(3, (now - lastPetalTime) / (1000 / 60)) : 1;
+  lastPetalTime = now;
   ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
   for (let i = petals.length - 1; i >= 0; i -= 1) {
     const petal = petals[i];
-    petal.x += petal.vx;
-    petal.y += petal.vy;
-    petal.vy += 0.045;
-    petal.vx += petal.drift;
-    petal.angle += petal.spin;
-    petal.life -= 1;
+    petal.x += petal.vx * step;
+    petal.y += petal.vy * step;
+    petal.vy += 0.045 * step;
+    petal.vx += petal.drift * step;
+    petal.angle += petal.spin * step;
+    petal.life -= step;
     drawPetal(petal);
 
     if (petal.life <= 0 || petal.y > window.innerHeight + 40) {
-      petals.splice(i, 1);
+      petals[i] = petals[petals.length - 1];
+      petals.pop();
     }
   }
-  window.requestAnimationFrame(animatePetals);
+  if (petals.length) requestPetalFrame();
+  else lastPetalTime = 0;
+}
+
+function requestPetalFrame() {
+  if (!petalFrame) petalFrame = window.requestAnimationFrame(animatePetals);
 }
 
 function plantInitialGarden() {
@@ -239,4 +254,3 @@ windButton.addEventListener("click", () => {
 
 resizeCanvas();
 plantInitialGarden();
-animatePetals();

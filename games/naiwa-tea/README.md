@@ -30,9 +30,9 @@ node scripts/serve.mjs
 
 ## 部署
 
-这是静态站点，可将本目录直接部署到 Cloudflare Pages 或其他静态服务，构建命令留空，发布目录使用 `naiwa-tea`（以整个仓库作为根目录时）。
+这是静态站点，可将本目录直接部署到 Cloudflare Pages 或其他静态服务，构建命令留空，发布目录使用 `games/naiwa-tea`（以整个仓库作为根目录时）。
 
-仓库中的 GitHub Actions 会把 `naiwa-tea` 目录发布到 GitHub Pages 网站根路径。当前在线地址是 <https://letianhu18-web.github.io/-/>。每次更新 `naiwa-tea/` 内容都会自动重新发布。
+仓库中的 GitHub Actions 会把 `games/naiwa-tea` 目录发布到 GitHub Pages 网站根路径。当前在线地址是 <https://letianhu18-web.github.io/-/>。每次更新 `games/naiwa-tea/` 内容都会自动重新发布。
 
 原作者的 Cloudflare 域名由原网站项目管理；向这个 GitHub 仓库发布不会改动该域名。
 

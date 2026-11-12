@@ -5,14 +5,8 @@ on:
     branches:
       - main
     paths:
-      - "naiwa-tea/**"
-      - "safe-after-school/**"
-      - "suika-the-politician/**"
-      - "merge-merz/**"
-      - "mothers-day-flower-garden/**"
-      - "index.html"
-      - "script.js"
-      - "styles.css"
+      - "games/**"
+      - "agent/**"
       - ".github/workflows/deploy-naiwa-pages.yml"
   workflow_dispatch:
 
@@ -39,17 +33,17 @@ jobs:
       - name: Prepare websites
         run: |
           mkdir -p _site/safe-after-school _site/suika-the-politician
-          cp -a naiwa-tea/. _site/
-          cp safe-after-school/index.html _site/safe-after-school/index.html
-          cp suika-the-politician/index.html _site/suika-the-politician/
-          cp suika-the-politician/preview.webp _site/suika-the-politician/
-          cp -a suika-the-politician/assets suika-the-politician/scripts suika-the-politician/styles _site/suika-the-politician/
+          cp -a games/naiwa-tea/. _site/
+          cp games/safe-after-school/index.html _site/safe-after-school/index.html
+          cp games/suika-the-politician/index.html _site/suika-the-politician/
+          cp games/suika-the-politician/preview.webp _site/suika-the-politician/
+          cp -a games/suika-the-politician/assets games/suika-the-politician/scripts games/suika-the-politician/styles _site/suika-the-politician/
           mkdir -p _site/merge-merz
-          cp merge-merz/index.html merge-merz/preview.webp _site/merge-merz/
-          cp -a merge-merz/assets merge-merz/scripts merge-merz/styles _site/merge-merz/
+          cp games/merge-merz/index.html games/merge-merz/preview.webp _site/merge-merz/
+          cp -a games/merge-merz/assets games/merge-merz/scripts games/merge-merz/styles _site/merge-merz/
           mkdir -p _site/mothers-day-flower-garden _site/christmas-tree
-          cp mothers-day-flower-garden/index.html mothers-day-flower-garden/script.js mothers-day-flower-garden/styles.css _site/mothers-day-flower-garden/
-          cp index.html script.js styles.css _site/christmas-tree/
+          cp agent/mothers-day-flower-garden/{index.html,script.js,styles.css} _site/mothers-day-flower-garden/
+          cp agent/christmas-tree/{index.html,script.js,styles.css} _site/christmas-tree/
           touch _site/.nojekyll
       - name: Package static site
         uses: actions/upload-pages-artifact@v3
